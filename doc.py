@@ -114,57 +114,11 @@ def Clear2():
 
 
 def Save():
-    R1 = Registration.get()
-    N1 = Name.get()
 
-    try:
-        G1 = gender
-    except:
-        messagebox.showerror("“error", "Select Gender!")
-
-    D2 = age.get()
-    D1 = Date.get()
-    Re1 = weight.get()
-    S1 = height.get()
-    temp = temprature.get()
-    res = respiration.get()
-    F1 = pulse.get()
-    M1 = bp.get()
-    vill = village.get()
-    mob = mobile.get()
-    mobile.set('')
-    if N1 == "" or D2 == "" or Re1 == "" or S1 == "" or temp == "" or res == "" or F1 == "" or M1 == "":
-        messagebox.showerror("“error", "Few Data is missing!")
-    else:
-        file = openpyxl.load_workbook(pathmain)
-        sheet = file.active
-        sheet.cell(column=1, row=sheet.max_row + 1, value=R1)
-        sheet.cell(column=2, row=sheet.max_row, value=N1)
-
-        sheet.cell(column=4, row=sheet.max_row, value=G1)
-        sheet.cell(column=5, row=sheet.max_row, value=D2)
-        sheet.cell(column=6, row=sheet.max_row, value=D1)
-        sheet.cell(column=7, row=sheet.max_row, value=Re1)
-        sheet.cell(column=8, row=sheet.max_row, value=S1)
-        sheet.cell(column=9, row=sheet.max_row, value=temp)
-        sheet.cell(column=10, row=sheet.max_row, value=res)
-        sheet.cell(column=11, row=sheet.max_row, value=F1)
-        sheet.cell(column=12, row=sheet.max_row, value=M1)
-        sheet.cell(column=13, row=sheet.max_row, value=vill)
-        sheet.cell(column=14, row=sheet.max_row, value=mob)
-
-        file.save(pathmain)
-        try:
-            img.save("Student Images/" + str(R1) + ".jpg")
-        except:
-            messagebox.showinfo("info", "Profile Picture is not available!!!!")
-        messagebox.showinfo("info", "Sucessfully data entered!!!")
-        Clear()  # clear entry box and image section
-
-        registration_no()  # it will recheck registration no. and reissue new no.
+    print("abcd")
 
 
-first =0
+
 def search():
     text = Search.get()  # taking input from entry box
 
@@ -174,23 +128,17 @@ def search():
 
     file = openpyxl.load_workbook(pathmain)
     sheet = file.active
-    if(text == ""):
-        messagebox.showerror("Invalid", "Invalid registration number! !!")
-        return
+
     for row in sheet.rows:
         if row[0].value == int(text):
             name = row[0]
             reg_no_position = str(name)[14:-1]
-            global first
-            first =1;
             reg_number = str(name)[15:-1]
             try:
                 print(str(name))
             except:
                 messagebox.showerror("Invalid", "Invalid registration number! !!")
-    if(first == 0):
-        messagebox.showerror("Invalid", "Invalid registration number! !!")
-        return
+
     x1 = sheet.cell(row=int(reg_number), column=1).value
     x2 = sheet.cell(row=int(reg_number), column=2).value
     x3 = sheet.cell(row=int(reg_number), column=3).value
@@ -211,10 +159,10 @@ def search():
 
 
     if x4 == "Female":
-        R2.select()
+        Gender.set("Female")
 
     else:
-        R1.select()
+        Gender.set("male")
 
     age.set(x5)
 
@@ -230,54 +178,7 @@ def search():
     bp.set(x12)
     village.set(x13)
     mobile.set(x14)
-    first =0;
-    ####################################Update#####################################
 
-
-def Update():
-    reg_number = IntVar()
-    R1 = Registration.get()
-    N1 = Name.get()
-
-    selection()
-    Gl = gender
-    D2 = age.get()
-    D1 = Date.get()
-    Re1 = weight.get()
-    S1 = height.get()
-    fathername = temprature.get()
-    mothername = respiration.get()
-    F1 = pulse.get()
-    M1 = bp.get()
-    uvill = village.get()
-    umob = mobile.get()
-    file = openpyxl.load_workbook(pathmain)
-    sheet = file.active
-    for row in sheet.rows:
-        if row[0].value == R1:
-            name = row[0]
-            print(str(name))
-            reg_no_position = str(name)[14:-1]
-            reg_number = str(name)[15:-1]
-            print(reg_number)
-
-    sheet.cell(column=1, row=int(reg_number), value=R1)
-    sheet.cell(column=2, row=int(reg_number), value=N1)
-
-    sheet.cell(column=4, row=int(reg_number), value=Gl)
-    sheet.cell(column=5, row=int(reg_number), value=D2)
-    sheet.cell(column=6, row=int(reg_number), value=D1)
-    sheet.cell(column=7, row=int(reg_number), value=Re1)
-    sheet.cell(column=8, row=int(reg_number), value=S1)
-    sheet.cell(column=9, row=int(reg_number), value=fathername)
-    sheet.cell(column=10, row=int(reg_number), value=mothername)
-    sheet.cell(column=11, row=int(reg_number), value=F1)
-    sheet.cell(column=12, row=int(reg_number), value=M1)
-    sheet.cell(column=13, row=int(reg_number), value=uvill)
-    sheet.cell(column=14, row=int(reg_number), value=umob)
-    file.save(pathmain)
-    messagebox.showinfo("info", "Sucessfully data entered!!!")
-    Clear()
     ####################################gender#####################################
 
 
@@ -304,32 +205,29 @@ obj = None
 mobile = StringVar()
 village = StringVar()
 Search = StringVar()
+Gender = StringVar()
+name_lable = customtkinter.CTkLabel
 
 # top frames
-obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=900, height=500, fg_color=obj_frame_col, border_width=4,
+obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=400, height=600, fg_color=obj_frame_col, border_width=4,
                              border_color="black")
-obj.place(x=300, y=200)
+obj.place(x=230, y=130)
 
 Label(root, text="Clinic Management", width=10, height=2, bg="#c36464", fg='#fff', font='arial 20 bold').pack(side=TOP,
                                                                                                               fill=X)
-
 # Registration and Date
 
-customtkinter.CTkLabel(master=root, text="Token No:", text_color=textcolor,font=(fontmain, 20)).place(x=300, y=157)
-customtkinter.CTkLabel(master=root, text="Date:", text_color=textcolor,font=(fontmain, 20)).place(x=910, y=157)
+customtkinter.CTkLabel(master=root, text="Date:", text_color=textcolor,font=(fontmain, 20)).place(x=230, y=77)
 Registration = IntVar()
 Date = StringVar()
-reg_entry = customtkinter.CTkEntry(master=root, corner_radius=15, fg_color=background,text_color=textcolor,textvariable=Registration, height=40,
-                                   font=(fontmain, 20), width=220)
-reg_entry.place(x=400, y=150)
+
 
 registration_no()
 
 today = date.today()
 d1 = today.strftime("%d/%m/%Y")
-date_entry = customtkinter.CTkEntry(master=root, corner_radius=15,fg_color=background,text_color=textcolor, textvariable=Date, height=40, font=(fontmain, 20),
-                                    width=220)
-date_entry.place(x=970, y=150)
+customtkinter.CTkLabel(root, textvariable=Date, text_color=textcolor, font=(fontmain, 20)).place(x=290, y=75)
+
 Date.set(d1)
 
 
@@ -339,58 +237,30 @@ def reg_page():
     customtkinter.CTkLabel(obj, text="Full Name:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=55)
     customtkinter.CTkLabel(obj, text="Age:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=105)
     customtkinter.CTkLabel(obj, text="Gender:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=155)
-
-    customtkinter.CTkLabel(obj, text="Weight:", text_color=textcolor,font=(fontmain, 20)).place(x=480, y=105)
-    customtkinter.CTkLabel(obj, text="Height:", text_color=textcolor,font=(fontmain, 20)).place(x=480, y=155)
+    customtkinter.CTkLabel(obj, text="Weight:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=355)
+    customtkinter.CTkLabel(obj, text="Height:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=405)
     customtkinter.CTkLabel(obj, text="Temperature:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=205)
     customtkinter.CTkLabel(obj, text="Pulse:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=255)
-    customtkinter.CTkLabel(obj, text="Respiration:", text_color=textcolor,font=(fontmain, 20)).place(x=480, y=205)
-    customtkinter.CTkLabel(obj, text="BP:", text_color=textcolor,font=(fontmain, 20)).place(x=480, y=255)
+    customtkinter.CTkLabel(obj, text="Respiration:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=455)
+    customtkinter.CTkLabel(obj, text="BP:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=505)
     customtkinter.CTkLabel(obj, text="Village Name:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=305)
-    customtkinter.CTkLabel(obj, text="Mobile:", text_color=textcolor,font=(fontmain, 20)).place(x=480, y=305)
+    customtkinter.CTkLabel(obj, text="Mobile:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=555)
 
     # Entry
-    name_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=Name, height=40, font=(fontmain, 20),
-                                        width=220)
-    name_entry.place(x=170, y=50)
-    age_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=age, height=40, font=(fontmain, 20),
-                                       width=220)
-    age_entry.place(x=170, y=100)
-    weight_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=weight, height=40,
-                                          font=(fontmain, 20), width=220)
-    weight_entry.place(x=630, y=100)
-    height_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=height, height=40,
-                                          font=(fontmain, 20), width=220)
-    height_entry.place(x=630, y=150)
-    temp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=temprature, height=40,
-                                        font=(fontmain, 20), width=220)
-    temp_entry.place(x=170, y=200)
-    pulse_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=pulse, height=40,
-                                         font=(fontmain, 20), width=220)
-    pulse_entry.place(x=170, y=250)
-    resp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=respiration, height=40,
-                                        font=(fontmain, 20), width=220)
-    resp_entry.place(x=630, y=200)
-    bp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=bp, height=40, font=(fontmain, 20),
-                                      width=220)
-    bp_entry.place(x=630, y=250)
-    village_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=village, height=40,
-                                           font=(fontmain, 20), width=220)
-    village_entry.place(x=630, y=300)
-    mobile_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=15, textvariable=mobile, height=40,
-                                          font=(fontmain, 20), width=220)
-    mobile_entry.place(x=170, y=300)
+    customtkinter.CTkLabel(obj, textvariable = Name, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=50)
+    customtkinter.CTkLabel(obj, textvariable = age, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=100)
+    customtkinter.CTkLabel(obj, textvariable = weight, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=350)
+    customtkinter.CTkLabel(obj, textvariable = height, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=400)
+    customtkinter.CTkLabel(obj, textvariable = temprature, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=200)
+    customtkinter.CTkLabel(obj, textvariable = pulse, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=250)
+    customtkinter.CTkLabel(obj, textvariable = respiration, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=450)
+    customtkinter.CTkLabel(obj, textvariable = bp, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=500)
+    customtkinter.CTkLabel(obj, textvariable = village, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=550)
+    customtkinter.CTkLabel(obj, textvariable = mobile, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=300)
+    customtkinter.CTkLabel(obj, textvariable= Gender, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=160)
 
     # Radio Button
-    global R1
-    global R2
-    R1 = customtkinter.CTkRadioButton(obj, text="Male", command=selection, variable=radio, value=1, text_color="black")
-    R2 = customtkinter.CTkRadioButton(obj, text="Female", command=selection, variable=radio, value=2,
-                                      text_color='black')
 
-
-    R1.place(x=170, y=160)
-    R2.place(x=270, y=160)
 
 
 
@@ -410,11 +280,11 @@ def del_page():
 
 def hideindicate():
     reg_indicate.config(bg=buttoncolorlite)
-    bill_indicate.config(bg=buttoncolorlite)
+
     stock_indicate.config(bg=buttoncolorlite)
 
     reg_btn.configure(fg_color=buttoncolorlite)
-    bill_btn.configure(fg_color=buttoncolorlite)
+
     stock_btn.configure(fg_color=buttoncolorlite)
 
 
@@ -422,8 +292,6 @@ def indicate(lb, btn, page):
     hideindicate()
     if btn == 1:
         reg_btn.configure(fg_color=buttoncolor)
-    elif btn == 2:
-        bill_btn.configure(fg_color=buttoncolor)
     else:
         stock_btn.configure(fg_color=buttoncolor)
     lb.config(bg=buttoncolor)
@@ -435,7 +303,7 @@ option_frame = customtkinter.CTkFrame(master=root, corner_radius=0, fg_color=sid
 my_image = customtkinter.CTkImage(light_image=Image.open("stock-removebg-preview.png"),
                                   dark_image=Image.open("stock-removebg-preview.png"),
                                   size=(40, 40))
-reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolorlite, hover="disable", text='Registration',
+reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolorlite, hover="disable", text='Check-Up',
                                   width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                   height=40, command=lambda: indicate(reg_indicate, 1, reg_page))
 reg_btn.place(x=15, y=50)
@@ -443,13 +311,6 @@ reg_btn.place(x=15, y=50)
 reg_indicate = tk.Label(option_frame, text='', bg=buttoncolor)
 reg_indicate.place(x=3, y=55, width=5, height=40)
 
-bill_btn = customtkinter.CTkButton(option_frame, text="Bill                 ", hover="disable", image=my_image,
-                                   fg_color=buttoncolorlite, width=150, corner_radius=10, border_width=2, border_color="black",
-                                   border_spacing=2, height=40, command=lambda: indicate(bill_indicate, 2, bill_page))
-bill_btn.place(x=15, y=105)
-
-bill_indicate = tk.Label(option_frame, text='', bg=buttoncolor)
-bill_indicate.place(x=3, y=110, width=5, height=40)
 
 stock_btn = customtkinter.CTkButton(option_frame, text='Stock            ', hover="disable", image=my_image,
                                     fg_color=buttoncolorlite, width=150, corner_radius=10, border_width=2,
@@ -478,10 +339,6 @@ Srch = customtkinter.CTkButton(root, text="Search", command=search, image=srchim
                                width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                height=40)
 Srch.place(x=1350, y=70)
-
-customtkinter.CTkButton(root, text="Upload", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
-                        corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Update).place(x=1300, y=370)
 saveButton = customtkinter.CTkButton(root, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                                      corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                      height=40, command=Save)
