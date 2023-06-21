@@ -298,12 +298,12 @@ def indicate(lb, btn, page):
     del_page()
     page()
 
-
+reg_page()
 option_frame = customtkinter.CTkFrame(master=root, corner_radius=0, fg_color=side_frame_col)
 my_image = customtkinter.CTkImage(light_image=Image.open("stock-removebg-preview.png"),
                                   dark_image=Image.open("stock-removebg-preview.png"),
                                   size=(40, 40))
-reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolorlite, hover="disable", text='Check-Up',
+reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolor, hover="disable", text='Check-Up',
                                   width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                   height=40, command=lambda: indicate(reg_indicate, 1, reg_page))
 reg_btn.place(x=15, y=50)
