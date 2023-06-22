@@ -57,7 +57,6 @@ else:
 
     file.save(pathmain)
 
-
 def update():
     root.after(1000, update)  # run itself again after 1000 ms
 
@@ -206,13 +205,18 @@ mobile = StringVar()
 village = StringVar()
 Search = StringVar()
 Gender = StringVar()
+my_list = Listbox
+my_entry = Entry
+
 name_lable = customtkinter.CTkLabel
 
 # top frames
 obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=400, height=600, fg_color=obj_frame_col, border_width=4,
                              border_color="black")
 obj.place(x=230, y=130)
-
+obj2 = customtkinter.CTkFrame(master=root, corner_radius=15, width=850, height=600, fg_color=obj_frame_col, border_width=4,
+                             border_color="black")
+obj2.place(x=650, y=130)
 Label(root, text="Clinic Management", width=10, height=2, bg="#c36464", fg='#fff', font='arial 20 bold').pack(side=TOP,
                                                                                                               fill=X)
 # Registration and Date
@@ -229,6 +233,8 @@ d1 = today.strftime("%d/%m/%Y")
 customtkinter.CTkLabel(root, textvariable=Date, text_color=textcolor, font=(fontmain, 20)).place(x=290, y=75)
 
 Date.set(d1)
+# Doctor work
+
 
 
 # frame
@@ -259,13 +265,11 @@ def reg_page():
     customtkinter.CTkLabel(obj, textvariable = mobile, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=300)
     customtkinter.CTkLabel(obj, textvariable= Gender, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=160)
 
-    # Radio Button
+    # Doc
+    textbox = customtkinter.CTkTextbox(obj2, fg_color="white", width=400, height=200).place(x=400, y=50)
 
 
 
-
-def bill_page():
-    Label(obj, text="Full Name:", font="arial 13", bg=framebg, fg=framefg).place(x=30, y=50)
 
 
 def stock_page():
@@ -275,6 +279,8 @@ def stock_page():
 
 def del_page():
     for frame in obj.winfo_children():
+        frame.destroy()
+    for frame in obj2.winfo_children():
         frame.destroy()
 
 
@@ -339,15 +345,76 @@ Srch = customtkinter.CTkButton(root, text="Search", command=search, image=srchim
                                width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                height=40)
 Srch.place(x=1350, y=70)
-saveButton = customtkinter.CTkButton(root, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+saveButton = customtkinter.CTkButton(option_frame, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                                      corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                      height=40, command=Save)
-saveButton.place(x=1300, y=450)
-customtkinter.CTkButton(root, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+saveButton.place(x=15, y=400)
+customtkinter.CTkButton(option_frame, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Clear2).place(x=1300, y=530)
-customtkinter.CTkButton(root, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+                        command=Clear2).place(x=15, y=500)
+customtkinter.CTkButton(option_frame, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Exit).place(x=1300, y=610)
+                        command=Exit).place(x=15, y=600)
 
+
+
+def update(data):
+	# Clear the listbox
+	my_list.delete(0, END)
+
+	# Add toppings to listbox
+	for item in data:
+		my_list.insert(END, item)
+
+# Update entry box with listbox clicked
+def fillout(e):
+	my_entry.delete(0, END)
+
+	selected_item = my_list.get(ANCHOR)
+	my_entry.insert(0, selected_item)
+
+	my_list.selection_clear(0, END)
+
+# Create function to check entry vs listbox
+def check(e):
+	# grab what was typed
+	typed = my_entry.get()
+
+	if typed == '':
+		data = toppings
+	else:
+		data = []
+		for item in toppings:
+			if typed.lower() in item.lower():
+				data.append(item)
+
+	# update our listbox with selected items
+	update(data)
+
+
+my_entry = Entry(obj2, font=("Helvetica", 20))
+my_entry.place(x=10, y=10)
+
+my_list = Listbox(obj2, width=50)
+my_list.place(x=10, y=50)
+
+
+
+# Create a list of pizza toppings
+toppings = []
+file = openpyxl.load_workbook('Student_data_2.xlsx')
+sheet = file.active
+
+for row in sheet.rows:
+	toppings.append(row[1].value)
+
+
+# Add the toppings to our list
+update(toppings)
+
+# Create a binding on the listbox onclick
+my_list.bind("<<ListboxSelect>>", fillout)
+
+# Create a binding on the entry box
+my_entry.bind("<KeyRelease>", check)
 root.mainloop()
