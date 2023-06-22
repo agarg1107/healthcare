@@ -12,7 +12,7 @@ import customtkinter
 
 root = Tk()
 root.title('Codemy.com - Auto Select/Search')
-
+root.iconbitmap('D:/Programming/Ai and Ml/Machine learning tut/healthcare/Student Images/1.jpg')
 root.geometry("800x800")
 
 # Update the listbox

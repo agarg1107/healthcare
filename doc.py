@@ -8,7 +8,29 @@ from openpyxl import Workbook
 import pathlib
 import tkinter as tk
 import customtkinter
-
+from tkinter import ttk
+patient_detail_from_doc = "patient.xlsx"
+file = pathlib.Path(patient_detail_from_doc)
+if file.exists():
+    pass
+else:
+    file = Workbook()
+    sheet1 = file.active
+    sheet1['A1'] = "Token"
+    sheet1['B1'] = "Name"
+    sheet1['C1'] = "Dose"
+    sheet1['D1'] = "Days"
+    sheet1['E1'] = "Description"
+    file.save(patient_detail_from_doc)
+doc_med_old = "docmed.xlsx"
+file = pathlib.Path(doc_med_old)
+if file.exists():
+    pass
+else:
+    file = Workbook()
+    sheet1 = file.active
+    sheet1['A1'] = "Name"
+    file.save(doc_med_old)
 customtkinter.set_appearance_mode("System")
 textcolor = "#333333"
 side_frame_col = "#F2DFD7"
@@ -237,8 +259,15 @@ Date.set(d1)
 
 
 
+docmedslst = []
 # frame
 def reg_page():
+
+    file = openpyxl.load_workbook(doc_med_old)
+    sheet3 = file.active
+    for i in sheet3.rows:
+        docmedslst.append(i[0].value)
+
     # Labels
     customtkinter.CTkLabel(obj, text="Full Name:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=55)
     customtkinter.CTkLabel(obj, text="Age:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=105)
@@ -266,11 +295,251 @@ def reg_page():
     customtkinter.CTkLabel(obj, textvariable= Gender, text_color=textcolor, font=(fontmain, 20)).place(x=170, y=160)
 
     # Doc
-    textbox = customtkinter.CTkTextbox(obj2, fg_color="white", width=400, height=200).place(x=400, y=50)
+    def clear_textbox():
+        textbox.delete(1.0,3.0)
+    def get_text():
+        global pnt_dis
+        pnt_dis = textbox.get(1.0, 3.0)
+
+    textbox = customtkinter.CTkTextbox(obj2, fg_color="white",width=400,height=200)
+    textbox.place(x=430, y=50)
 
 
 
+    def update(data):
+        # Clear the listbox
+        my_list.delete(0, END)
 
+        # Add toppings to listbox
+        for item in data:
+            my_list.insert(END, item)
+    def fillout(e):
+        my_entry.delete(0, END)
+
+        selected_item = my_list.get(ANCHOR)
+        my_entry.insert(0, selected_item)
+
+        my_list.selection_clear(0, END)
+    def check(e):
+        # grab what was typed
+        typed = my_entry.get()
+
+        if typed == '':
+            data = toppings
+        else:
+            data = []
+            for item in toppings:
+                if typed.lower() in item.lower():
+                    data.append(item)
+
+        # update our listbox with selected items
+        update(data)
+    my_entry = customtkinter.CTkEntry(master=obj2, text_color=textcolor,fg_color=background,corner_radius=10, textvariable=med_name, height=30,
+                                        font=(fontmain, 20), width=240)
+    my_entry.place(x=10, y=50)
+
+    my_list = Listbox(obj2, width=40,bd=0,background=background)
+    my_list.place(x=10, y=90)
+
+    # Create a list of pizza toppings
+    toppings = []
+    file = openpyxl.load_workbook(doc_med_old)
+    sheet = file.active
+
+    for row in sheet.rows:
+        toppings.append(row[0].value)
+
+    # Add the toppings to our list
+    update(toppings)
+
+    # Create a binding on the listbox onclick
+    my_list.bind("<<ListboxSelect>>", fillout)
+
+    # Create a binding on the entry box
+    my_entry.bind("<KeyRelease>", check)
+#     addition med
+    my_entry_mg = customtkinter.CTkEntry(master=obj2, text_color=textcolor, fg_color=background, corner_radius=8,
+                                      textvariable=dose, height=30,
+                                      font=(fontmain, 20), width=50)
+    my_entry_mg.place(x=330, y=130)
+    customtkinter.CTkLabel(obj2, text="Dose : ", text_color=textcolor, font=(fontmain, 20)).place(x=260, y=130)
+    my_entry_days = customtkinter.CTkEntry(master=obj2, text_color=textcolor, fg_color=background, corner_radius=8,
+                                         textvariable=days, height=30,
+                                         font=(fontmain, 20), width=50)
+    my_entry_days.place(x=330, y=190)
+    customtkinter.CTkLabel(obj2, text="Days : ", text_color=textcolor, font=(fontmain, 20)).place(x=260, y=190)
+#     button delete ans add
+
+
+    def Clear():
+        global pnt_dis
+        med_no.set('')
+        days.set('')
+        dose.set('')
+        pnt_dis = ''
+        med_name.set('')
+        registration_no()
+
+    def add_record():
+        my_tree.tag_configure('oddrow', background="white")
+        my_tree.tag_configure('evenrow', background="lightblue")
+
+        global count
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text="",
+                           values=(Registration.get(), med_name.get(), days.get(),dose.get()), tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text="",
+                           values=(Registration.get(), med_name.get(), days.get(),dose.get()), tags=('oddrow',))
+
+        count += 1
+
+    def find_item_in_list(lst, item):
+        try:
+            index = lst.index(item)
+            return False
+        except ValueError:
+            return True
+    def addmed():
+        if(Search.get() == ''):
+            messagebox.showerror("“error", "Please find the Patient!")
+            return
+        get_text()
+        n = med_name.get()
+        med_d = days.get()
+        med_dose = dose.get()
+
+        if n == "" or med_d == "" or med_dose == "":
+            messagebox.showerror("“error", "Few Data is missing!")
+
+        else:
+            file = openpyxl.load_workbook(patient_detail_from_doc)
+            # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+            sheet1 = file.active
+            sheet1.cell(column=1, row=sheet1.max_row + 1, value=Registration.get())
+            sheet1.cell(column=2, row=sheet1.max_row, value=n)
+            sheet1.cell(column=3, row=sheet1.max_row, value=med_d)
+            sheet1.cell(column=4, row=sheet1.max_row, value=med_dose)
+            sheet1.cell(column=5, row=sheet1.max_row, value=pnt_dis)
+
+            file.save(patient_detail_from_doc)
+            add_record()
+            a = find_item_in_list(docmedslst,med_name.get())
+            if(a):
+                file2 = openpyxl.load_workbook(doc_med_old)
+
+                sheet3 = file2.active
+                sheet3.cell(column=1, row=sheet3.max_row + 1, value=med_name.get())
+                file2.save(doc_med_old)
+                for row in sheet3.rows:
+                    toppings.append(row[0].value)
+                    # Add the toppings to our list
+                update(toppings)
+                toppings.clear()
+
+            clear_textbox()
+            Clear() # clear entry box and image section
+
+
+    def delmed():
+        x = my_tree.selection()[0]
+        my_tree.delete(x)
+
+
+
+    add_btn = customtkinter.CTkButton(obj2, text='ADD', hover="disable",
+                                        fg_color=buttoncolorlite, width=80, corner_radius=10, border_width=2,
+                                        border_color="black", border_spacing=2, height=40,command=lambda: addmed()
+                                      )
+    add_btn.place(x=30, y=280)
+    delete_btn = customtkinter.CTkButton(obj2, text='DELETE', hover="disable",
+                                      fg_color=buttoncolorlite, width=100, corner_radius=10, border_width=2,
+                                      border_color="black", border_spacing=2, height=40,
+                                      command=lambda: delmed()
+                                      )
+    delete_btn.place(x=140, y=280)
+#     excel
+
+    style = ttk.Style()
+    # Pick a theme
+    style.theme_use("clam")
+    # Configure our treeview colors
+
+    style.configure("Treeview",
+                    background=background,
+                    foreground="black",
+                    rowheight=20,
+                    fieldbackground=mainbackground
+                    )
+    # Change selected color
+    style.map('Treeview',
+              background=[('selected', 'blue')])
+
+    # Create Treeview Frame
+    tree_frame = Frame(obj2)
+    tree_frame.place(x = 20, y = 340)
+
+    # Treeview Scrollbar
+    tree_scroll = customtkinter.CTkScrollbar(tree_frame,corner_radius=9,fg_color=mainbackground,button_color=background)
+    tree_scroll.pack(side=RIGHT, fill=Y)
+
+    # Create Treeview
+    my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set, selectmode="extended")
+    # Pack to the screen
+    my_tree.pack()
+
+    # Configure the scrollbar
+    tree_scroll.configure(command=my_tree.yview)
+
+    # Define Our Columns
+    my_tree['columns'] = ("Token", "Name", "Dose","Days")
+
+    # Formate Our Columns
+    my_tree.column("#0", width=0, stretch=NO)
+    my_tree.column("Name", anchor=W, width=140)
+    my_tree.column("Dose", anchor=CENTER, width=100)
+    my_tree.column("Days", anchor=W, width=140)
+    my_tree.column("Token", anchor=W, width=140)
+
+    # Create Headings
+    my_tree.heading("#0", text="", anchor=W)
+    my_tree.heading("Name", text="Name", anchor=W)
+    my_tree.heading("Dose", text="Dose", anchor=CENTER)
+    my_tree.heading("Days", text="Days", anchor=W)
+    my_tree.heading("Token", text="Token", anchor=W)
+    data =  []
+    file = openpyxl.load_workbook(patient_detail_from_doc)
+    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+    sheet1 = file.active
+    for row in sheet1.iter_rows(min_row=2):
+        lst = []
+        lst.append(row[0].value)
+        lst.append(row[1].value)
+        lst.append(row[2].value)
+        lst.append(row[3].value)
+        data.append(lst)
+
+    # Create striped row tags
+    my_tree.tag_configure('oddrow', background="white")
+    my_tree.tag_configure('evenrow', background="lightblue")
+
+    global count
+    count = 0
+
+    for record in data:
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('oddrow',))
+
+        count += 1
+med_no = IntVar()
+med_name = StringVar()
+pnt_dis = StringVar()
+dose = StringVar()
+days = StringVar()
 
 def stock_page():
     s_p = tk.Frame(obj)
@@ -358,63 +627,5 @@ customtkinter.CTkButton(option_frame, text="Exit", image=srchimage, fg_color=but
 
 
 
-def update(data):
-	# Clear the listbox
-	my_list.delete(0, END)
 
-	# Add toppings to listbox
-	for item in data:
-		my_list.insert(END, item)
-
-# Update entry box with listbox clicked
-def fillout(e):
-	my_entry.delete(0, END)
-
-	selected_item = my_list.get(ANCHOR)
-	my_entry.insert(0, selected_item)
-
-	my_list.selection_clear(0, END)
-
-# Create function to check entry vs listbox
-def check(e):
-	# grab what was typed
-	typed = my_entry.get()
-
-	if typed == '':
-		data = toppings
-	else:
-		data = []
-		for item in toppings:
-			if typed.lower() in item.lower():
-				data.append(item)
-
-	# update our listbox with selected items
-	update(data)
-
-
-my_entry = Entry(obj2, font=("Helvetica", 20))
-my_entry.place(x=10, y=10)
-
-my_list = Listbox(obj2, width=50)
-my_list.place(x=10, y=50)
-
-
-
-# Create a list of pizza toppings
-toppings = []
-file = openpyxl.load_workbook('Student_data_2.xlsx')
-sheet = file.active
-
-for row in sheet.rows:
-	toppings.append(row[1].value)
-
-
-# Add the toppings to our list
-update(toppings)
-
-# Create a binding on the listbox onclick
-my_list.bind("<<ListboxSelect>>", fillout)
-
-# Create a binding on the entry box
-my_entry.bind("<KeyRelease>", check)
 root.mainloop()
