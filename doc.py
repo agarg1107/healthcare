@@ -281,7 +281,6 @@ def filldata():
     count -= len(rows_to_delete)
     for item in my_tree.get_children():
         values = my_tree.item(item)["values"]
-        print(values)
         row = sheet5.max_row + 1
         for col, value in enumerate(values, start=1):
             setdata.set(value)
