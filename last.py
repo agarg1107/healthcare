@@ -1,17 +1,24 @@
 import tkinter as tk
+from tkinter import ttk
 
-def insert_line():
-    text_box.insert("end", "\u2028")  # Insert the line separator character at the end of the text box
+def get_all_data():
+    for item in treeview.get_children():
+        values = treeview.item(item)["values"]
+        print(values)
 
 # Create the GUI window
 window = tk.Tk()
 
-# Create the text box
-text_box = tk.Text(window)
-text_box.pack()
+# Create the Treeview
+treeview = ttk.Treeview(window)
+treeview.pack()
 
-# Create a button to insert the line
-button = tk.Button(window, text="Insert Line", command=insert_line)
+# Insert data into the Treeview
+treeview.insert("", "end", values=("Item 1", "Value 1"))
+treeview.insert("", "end", values=("Item 2", "Value 2"))
+
+# Create a button to retrieve all data
+button = ttk.Button(window, text="Get All Data", command=get_all_data)
 button.pack()
 
 # Start the GUI event loop

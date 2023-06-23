@@ -76,11 +76,6 @@ if file.exists():
 else:
     file = Workbook()
     sheet1 = file.active
-    sheet1['A1'] = "Token"
-    sheet1['B1'] = "Name"
-    sheet1['C1'] = "Dose"
-    sheet1['D1'] = "Days"
-    sheet1['E1'] = "Description"
     file.save(patient_detail_from_doc)
 file = pathlib.Path(doc_med_old)
 if file.exists():
@@ -135,6 +130,7 @@ def Clear():
     Name.set('')
     age.set('')
     weight.set('')
+    Gender.set('')
     height.set('')
     temprature.set('')
     respiration.set('')
@@ -144,11 +140,12 @@ def Clear():
     mobile.set('')
     # registration_no()
 def Clear2():
-    saveButton.configure(state='active')
+
     global img
     Name.set('')
     age.set('')
     weight.set('')
+    Gender.set('')
     height.set('')
     village.set('')
     mobile.set('')
@@ -164,8 +161,7 @@ def search():
     text = Search.get()  # taking input from entry box
 
     Clear()  # to clear all the data already available in entry box and other
-    saveButton.configure(
-        state='disable')  # after clicking on search , save button will disable so that no one can click on
+  # after clicking on search , save button will disable so that no one can click on
 
     file = openpyxl.load_workbook(pathmain)
     sheet = file.active
@@ -238,7 +234,7 @@ def updatetree():
     # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
     sheet1 = file.active
 
-    for row in sheet1.iter_rows(min_row=2):
+    for row in sheet1.rows:
         lst = []
         if Search.get() == row[0].value:
             lst.append(row[0].value)
@@ -259,6 +255,48 @@ def updatetree():
                            tags=('oddrow',))
 
         count += 1
+def filldata():
+    file = openpyxl.load_workbook(patient_detail_from_doc)
+    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+    sheet5 = file.active
+    setdata = StringVar()
+    count = 0
+    rows_to_delete = []
+
+    for item in my_tree.get_children():
+        values = my_tree.item(item)["values"]
+
+        for row1 in sheet5.iter_rows():
+            count += 1
+
+            print(values[0])
+            if Search.get() == str(values[0]):
+                rows_to_delete.append(count)
+
+    # Delete the rows in reverse order
+    for row_index in sorted(rows_to_delete, reverse=True):
+        sheet5.delete_rows(row_index)
+
+    # Adjust the count variable if necessary
+    count -= len(rows_to_delete)
+    for item in my_tree.get_children():
+        values = my_tree.item(item)["values"]
+        print(values)
+        row = sheet5.max_row + 1
+        for col, value in enumerate(values, start=1):
+            setdata.set(value)
+            sheet5.cell(row=row, column=col, value=setdata.get())
+
+    count =0
+
+
+    file.save(patient_detail_from_doc)
+
+    # Close the workbook
+    file.close()
+
+
+
 def remove_all():
 	for record in my_tree.get_children():
 		my_tree.delete(record)
@@ -418,16 +456,16 @@ def reg_page():
             messagebox.showerror("“error", "Few Data is missing!")
 
         else:
-            file = openpyxl.load_workbook(patient_detail_from_doc)
-            # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
-            sheet1 = file.active
-            sheet1.cell(column=1, row=sheet1.max_row + 1, value=Search.get())
-            sheet1.cell(column=2, row=sheet1.max_row, value=n)
-            sheet1.cell(column=3, row=sheet1.max_row, value=med_d)
-            sheet1.cell(column=4, row=sheet1.max_row, value=med_dose)
-            sheet1.cell(column=5, row=sheet1.max_row, value=pnt_dis)
-
-            file.save(patient_detail_from_doc)
+            # file = openpyxl.load_workbook(patient_detail_from_doc)
+            # # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+            # sheet1 = file.active
+            # sheet1.cell(column=1, row=sheet1.max_row + 1, value=Search.get())
+            # sheet1.cell(column=2, row=sheet1.max_row, value=n)
+            # sheet1.cell(column=3, row=sheet1.max_row, value=med_d)
+            # sheet1.cell(column=4, row=sheet1.max_row, value=med_dose)
+            # sheet1.cell(column=5, row=sheet1.max_row, value=pnt_dis)
+            #
+            # file.save(patient_detail_from_doc)
             add_record()
             a = find_item_in_list(docmedslst,med_name.get())
             if(a):
@@ -440,30 +478,32 @@ def reg_page():
                     toppings.append(row[0].value)
                     # Add the toppings to our list
 
-            clear_textbox()
+
             Clear() # clear entry box and image section
 
 
     def delmed():
+        # x = my_tree.selection()[0]
+        #
+        # print(x)
+        # values = my_tree.item(x, 'values')
+        # print(values)
+        # file3 = openpyxl.load_workbook(patient_detail_from_doc)
+        # sheet4 = file3.active
+        # print(values[1])
+        # count =0
+        # for row1 in sheet4.rows:
+        #     count = count+1
+        #     print(row1)
+        #     if str(values[1]) == row1[1].value:
+        #         sheet4.delete_rows(count)
+        #         # Save the changes
+        # file3.save(patient_detail_from_doc)
+        # count =0
+        # # Close the workbook
+        # file3.close()
+        # my_tree.delete(x)
         x = my_tree.selection()[0]
-
-        print(x)
-        values = my_tree.item(x, 'values')
-        print(values)
-        file3 = openpyxl.load_workbook(patient_detail_from_doc)
-        sheet4 = file3.active
-        print(values[1])
-        count =0
-        for row1 in sheet4.rows:
-            count = count+1
-            print(row1)
-            if str(values[1]) == row1[1].value:
-                sheet4.delete_rows(count)
-                # Save the changes
-        file3.save(patient_detail_from_doc)
-        count =0
-        # Close the workbook
-        file3.close()
         my_tree.delete(x)
     add_btn = customtkinter.CTkButton(obj2, text='ADD', hover="disable",
                                         fg_color=buttoncolorlite, width=80, corner_radius=10, border_width=2,
@@ -625,16 +665,17 @@ Srch = customtkinter.CTkButton(root, text="Search", command=search, image=srchim
                                width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                height=40)
 Srch.place(x=1350, y=70)
-saveButton = customtkinter.CTkButton(option_frame, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+
+save2Button = customtkinter.CTkButton(obj2, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                                      corner_radius=10, border_width=2, border_color="black", border_spacing=2,
-                                     height=40, command=Save)
-saveButton.place(x=15, y=400)
+                                     height=40, command=filldata)
+save2Button.place(x=600, y=300)
 
 
-customtkinter.CTkButton(option_frame, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+customtkinter.CTkButton(obj2, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Clear2).place(x=15, y=500)
-customtkinter.CTkButton(option_frame, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+                        command=Clear2).place(x=600, y=400)
+customtkinter.CTkButton(obj2, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Exit).place(x=15, y=600)
+                        command=Exit).place(x=600, y=500)
 root.mainloop()
