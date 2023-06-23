@@ -9,28 +9,7 @@ import pathlib
 import tkinter as tk
 import customtkinter
 from tkinter import ttk
-patient_detail_from_doc = "patient.xlsx"
-file = pathlib.Path(patient_detail_from_doc)
-if file.exists():
-    pass
-else:
-    file = Workbook()
-    sheet1 = file.active
-    sheet1['A1'] = "Token"
-    sheet1['B1'] = "Name"
-    sheet1['C1'] = "Dose"
-    sheet1['D1'] = "Days"
-    sheet1['E1'] = "Description"
-    file.save(patient_detail_from_doc)
-doc_med_old = "docmed.xlsx"
-file = pathlib.Path(doc_med_old)
-if file.exists():
-    pass
-else:
-    file = Workbook()
-    sheet1 = file.active
-    sheet1['A1'] = "Name"
-    file.save(doc_med_old)
+#initial
 customtkinter.set_appearance_mode("System")
 textcolor = "#333333"
 side_frame_col = "#F2DFD7"
@@ -55,7 +34,62 @@ root.config(bg=mainbackground)
 # pathmain = "//LAPTOP-F1A0LRP8/Users/aman/Student_data.xlsx"
 pathmain = "Student_data.xlsx"
 file = pathlib.Path(pathmain)
+patient_detail_from_doc = "patient.xlsx"
+doc_med_old = "docmed.xlsx"
+file = pathlib.Path(patient_detail_from_doc)
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Declare
+fontmain = "Dotum"
+Name = StringVar()
+age = StringVar()
+radio = IntVar()
+weight = StringVar()
+height = StringVar()
+temprature = StringVar()
+pulse = StringVar()
+respiration = StringVar()
+bp = StringVar()
+obj = None
+mobile = StringVar()
+village = StringVar()
+Search = StringVar()
+Gender = StringVar()
+my_list = Listbox
+my_entry = Entry
+
+name_lable = customtkinter.CTkLabel
+med_no = IntVar()
+med_name = StringVar()
+pnt_dis = StringVar()
+dose = StringVar()
+days = StringVar()
+Registration = IntVar()
+Date = StringVar()
+
+docmedslst = []
+#-----------------------------------------------------------------------------------------------------------------------
+# file creation if not exist
+
+if file.exists():
+    pass
+else:
+    file = Workbook()
+    sheet1 = file.active
+    sheet1['A1'] = "Token"
+    sheet1['B1'] = "Name"
+    sheet1['C1'] = "Dose"
+    sheet1['D1'] = "Days"
+    sheet1['E1'] = "Description"
+    file.save(patient_detail_from_doc)
+file = pathlib.Path(doc_med_old)
+if file.exists():
+    pass
+else:
+    file = Workbook()
+    sheet1 = file.active
+    sheet1['A1'] = "Name"
+    file.save(doc_med_old)
 if file.exists():
     pass
 else:
@@ -79,28 +113,23 @@ else:
 
     file.save(pathmain)
 
+
 def update():
     root.after(1000, update)  # run itself again after 1000 ms
-
-
 def Exit():
     root.destroy()
-
-
-def registration_no():
-    file = openpyxl.load_workbook(pathmain)
-    sheet = file.active
-    row = sheet.max_row
-
-    max_row_value = sheet.cell(row=row, column=1).value
-
-    try:
-        Registration.set(max_row_value + 1)
-
-    except:
-        Registration.set("1")
-
-
+# def registration_no():
+#     file = openpyxl.load_workbook(pathmain)
+#     sheet = file.active
+#     row = sheet.max_row
+#
+#     max_row_value = sheet.cell(row=row, column=1).value
+#
+#     try:
+#         Registration.set(max_row_value + 1)
+#
+#     except:
+#         Registration.set("1")
 def Clear():
     global img
     Name.set('')
@@ -113,10 +142,7 @@ def Clear():
     bp.set('')
     village.set('')
     mobile.set('')
-
-    registration_no()
-
-
+    # registration_no()
 def Clear2():
     saveButton.configure(state='active')
     global img
@@ -131,15 +157,9 @@ def Clear2():
     pulse.set('')
     bp.set('')
 
-    registration_no()
-
-
+    # registration_no()
 def Save():
-
     print("abcd")
-
-
-
 def search():
     text = Search.get()  # taking input from entry box
 
@@ -199,10 +219,10 @@ def search():
     bp.set(x12)
     village.set(x13)
     mobile.set(x14)
-
+    remove_all()
+    data.clear()
+    updatetree()
     ####################################gender#####################################
-
-
 def selection():
     global gender
     value = radio.get()
@@ -210,57 +230,38 @@ def selection():
         gender = "Male"
     else:
         gender = "Female"
+data = []
 
+def updatetree():
 
-fontmain = "Dotum"
-Name = StringVar()
-age = StringVar()
-radio = IntVar()
-weight = StringVar()
-height = StringVar()
-temprature = StringVar()
-pulse = StringVar()
-respiration = StringVar()
-bp = StringVar()
-obj = None
-mobile = StringVar()
-village = StringVar()
-Search = StringVar()
-Gender = StringVar()
-my_list = Listbox
-my_entry = Entry
+    file = openpyxl.load_workbook(patient_detail_from_doc)
+    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+    sheet1 = file.active
 
-name_lable = customtkinter.CTkLabel
+    for row in sheet1.iter_rows(min_row=2):
+        lst = []
+        if Search.get() == row[0].value:
+            lst.append(row[0].value)
+            lst.append(row[1].value)
+            lst.append(row[2].value)
+            lst.append(row[3].value)
+            data.append(lst)
 
-# top frames
-obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=400, height=600, fg_color=obj_frame_col, border_width=4,
-                             border_color="black")
-obj.place(x=230, y=130)
-obj2 = customtkinter.CTkFrame(master=root, corner_radius=15, width=850, height=600, fg_color=obj_frame_col, border_width=4,
-                             border_color="black")
-obj2.place(x=650, y=130)
-Label(root, text="Clinic Management", width=10, height=2, bg="#c36464", fg='#fff', font='arial 20 bold').pack(side=TOP,
-                                                                                                              fill=X)
-# Registration and Date
+    global count
+    count = 0
 
-customtkinter.CTkLabel(master=root, text="Date:", text_color=textcolor,font=(fontmain, 20)).place(x=230, y=77)
-Registration = IntVar()
-Date = StringVar()
+    for record in data:
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('oddrow',))
 
-
-registration_no()
-
-today = date.today()
-d1 = today.strftime("%d/%m/%Y")
-customtkinter.CTkLabel(root, textvariable=Date, text_color=textcolor, font=(fontmain, 20)).place(x=290, y=75)
-
-Date.set(d1)
-# Doctor work
-
-
-
-docmedslst = []
-# frame
+        count += 1
+def remove_all():
+	for record in my_tree.get_children():
+		my_tree.delete(record)
 def reg_page():
 
     file = openpyxl.load_workbook(doc_med_old)
@@ -301,7 +302,9 @@ def reg_page():
         global pnt_dis
         pnt_dis = textbox.get(1.0, 3.0)
 
-    textbox = customtkinter.CTkTextbox(obj2, fg_color="white",width=400,height=200)
+    customtkinter.CTkLabel(obj2, text="Patient Description", text_color=textcolor, font=(fontmain, 20)).place(x=430, y=10)
+    textbox = customtkinter.CTkTextbox(obj2, fg_color=mainbackground,width=400,height=200, corner_radius=10, border_width=2,
+                                        border_color="black", border_spacing=2,text_color="black",activate_scrollbars=True,scrollbar_button_color=background)
     textbox.place(x=430, y=50)
 
 
@@ -334,6 +337,8 @@ def reg_page():
 
         # update our listbox with selected items
         update(data)
+
+    customtkinter.CTkLabel(obj2, text="Search", text_color=textcolor, font=(fontmain, 20)).place(x=10, y=10)
     my_entry = customtkinter.CTkEntry(master=obj2, text_color=textcolor,fg_color=background,corner_radius=10, textvariable=med_name, height=30,
                                         font=(fontmain, 20), width=240)
     my_entry.place(x=10, y=50)
@@ -378,7 +383,7 @@ def reg_page():
         dose.set('')
         pnt_dis = ''
         med_name.set('')
-        registration_no()
+        # registration_no()
 
     def add_record():
         my_tree.tag_configure('oddrow', background="white")
@@ -416,7 +421,7 @@ def reg_page():
             file = openpyxl.load_workbook(patient_detail_from_doc)
             # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
             sheet1 = file.active
-            sheet1.cell(column=1, row=sheet1.max_row + 1, value=Registration.get())
+            sheet1.cell(column=1, row=sheet1.max_row + 1, value=Search.get())
             sheet1.cell(column=2, row=sheet1.max_row, value=n)
             sheet1.cell(column=3, row=sheet1.max_row, value=med_d)
             sheet1.cell(column=4, row=sheet1.max_row, value=med_dose)
@@ -434,8 +439,6 @@ def reg_page():
                 for row in sheet3.rows:
                     toppings.append(row[0].value)
                     # Add the toppings to our list
-                update(toppings)
-                toppings.clear()
 
             clear_textbox()
             Clear() # clear entry box and image section
@@ -443,10 +446,25 @@ def reg_page():
 
     def delmed():
         x = my_tree.selection()[0]
+
+        print(x)
+        values = my_tree.item(x, 'values')
+        print(values)
+        file3 = openpyxl.load_workbook(patient_detail_from_doc)
+        sheet4 = file3.active
+        print(values[1])
+        count =0
+        for row1 in sheet4.rows:
+            count = count+1
+            print(row1)
+            if str(values[1]) == row1[1].value:
+                sheet4.delete_rows(count)
+                # Save the changes
+        file3.save(patient_detail_from_doc)
+        count =0
+        # Close the workbook
+        file3.close()
         my_tree.delete(x)
-
-
-
     add_btn = customtkinter.CTkButton(obj2, text='ADD', hover="disable",
                                         fg_color=buttoncolorlite, width=80, corner_radius=10, border_width=2,
                                         border_color="black", border_spacing=2, height=40,command=lambda: addmed()
@@ -484,6 +502,7 @@ def reg_page():
     tree_scroll.pack(side=RIGHT, fill=Y)
 
     # Create Treeview
+    global my_tree
     my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set, selectmode="extended")
     # Pack to the screen
     my_tree.pack()
@@ -507,52 +526,21 @@ def reg_page():
     my_tree.heading("Dose", text="Dose", anchor=CENTER)
     my_tree.heading("Days", text="Days", anchor=W)
     my_tree.heading("Token", text="Token", anchor=W)
-    data =  []
-    file = openpyxl.load_workbook(patient_detail_from_doc)
-    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
-    sheet1 = file.active
-    for row in sheet1.iter_rows(min_row=2):
-        lst = []
-        lst.append(row[0].value)
-        lst.append(row[1].value)
-        lst.append(row[2].value)
-        lst.append(row[3].value)
-        data.append(lst)
+    updatetree()
 
     # Create striped row tags
     my_tree.tag_configure('oddrow', background="white")
     my_tree.tag_configure('evenrow', background="lightblue")
 
-    global count
-    count = 0
-
-    for record in data:
-        if count % 2 == 0:
-            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
-                           tags=('evenrow',))
-        else:
-            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
-                           tags=('oddrow',))
-
-        count += 1
-med_no = IntVar()
-med_name = StringVar()
-pnt_dis = StringVar()
-dose = StringVar()
-days = StringVar()
 
 def stock_page():
     s_p = tk.Frame(obj)
     tk.Label(s_p, text='stock Page\n\nPage:3', font='Bold,30').place(x=1,y=1)
-
-
 def del_page():
     for frame in obj.winfo_children():
         frame.destroy()
     for frame in obj2.winfo_children():
         frame.destroy()
-
-
 def hideindicate():
     reg_indicate.config(bg=buttoncolorlite)
 
@@ -561,8 +549,6 @@ def hideindicate():
     reg_btn.configure(fg_color=buttoncolorlite)
 
     stock_btn.configure(fg_color=buttoncolorlite)
-
-
 def indicate(lb, btn, page):
     hideindicate()
     if btn == 1:
@@ -573,7 +559,33 @@ def indicate(lb, btn, page):
     del_page()
     page()
 
+
+
+
+
+# top frames
+obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=400, height=600, fg_color=obj_frame_col, border_width=4,
+                             border_color="black")
+obj.place(x=230, y=130)
+obj2 = customtkinter.CTkFrame(master=root, corner_radius=15, width=850, height=600, fg_color=obj_frame_col, border_width=4,
+                             border_color="black")
+obj2.place(x=650, y=130)
+
+
+Label(root, text="Clinic Management", width=10, height=2, bg="#c36464", fg='#fff', font='arial 20 bold').pack(side=TOP,
+                                                                                                              fill=X)
+
+customtkinter.CTkLabel(master=root, text="Date:", text_color=textcolor,font=(fontmain, 20)).place(x=230, y=77)
+
+# registration_no()
+
+today = date.today()
+d1 = today.strftime("%d/%m/%Y")
+customtkinter.CTkLabel(root, textvariable=Date, text_color=textcolor, font=(fontmain, 20)).place(x=290, y=75)
+
+Date.set(d1)
 reg_page()
+
 option_frame = customtkinter.CTkFrame(master=root, corner_radius=0, fg_color=side_frame_col)
 my_image = customtkinter.CTkImage(light_image=Image.open("stock-removebg-preview.png"),
                                   dark_image=Image.open("stock-removebg-preview.png"),
@@ -603,7 +615,6 @@ main_frame = tk.Frame(root, highlightbackground='black', highlightthickness=10)
 
 # button
 
-
 customtkinter.CTkEntry(master=root, corner_radius=15,text_color=textcolor, fg_color=background,textvariable=Search, placeholder_text="search", height=40,
                        font=(fontmain, 20), width=220).place(x=1110, y=75)
 imageicon3 = PhotoImage(file="Images/search.png")
@@ -618,14 +629,12 @@ saveButton = customtkinter.CTkButton(option_frame, text="Save", image=srchimage,
                                      corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                      height=40, command=Save)
 saveButton.place(x=15, y=400)
+
+
 customtkinter.CTkButton(option_frame, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
                         command=Clear2).place(x=15, y=500)
 customtkinter.CTkButton(option_frame, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
                         command=Exit).place(x=15, y=600)
-
-
-
-
 root.mainloop()
