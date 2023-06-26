@@ -1,25 +1,35 @@
-import tkinter as tk
-from tkinter import ttk
+from tkcalendar import Calendar, DateEntry
+try:
+    import tkinter as tk
+    from tkinter import ttk
+except ImportError:
+    import Tkinter as tk
+    import ttk
 
-def get_all_data():
-    for item in treeview.get_children():
-        values = treeview.item(item)["values"]
-        print(values)
+import datetime
+ # year, month, day
 
-# Create the GUI window
-window = tk.Tk()
+root = tk.Tk()
 
-# Create the Treeview
-treeview = ttk.Treeview(window)
-treeview.pack()
+def get_d():
+    diff21 = (d2 - d1).days
 
-# Insert data into the Treeview
-treeview.insert("", "end", values=("Item 1", "Value 1"))
-treeview.insert("", "end", values=("Item 2", "Value 2"))
+ttk.Label(root, text='Choose date').pack(padx=10, pady=10)
 
-# Create a button to retrieve all data
-button = ttk.Button(window, text="Get All Data", command=get_all_data)
-button.pack()
+cal = DateEntry(root, width=12, background='red',
+                    foreground='white', borderwidth=2, year=2023)
+cal.pack(padx=10, pady=10)
+selected_date = cal.get_date()
+year = selected_date.year
+month = selected_date.month
+day = selected_date.day
+d1 = datetime.date(year,month,day)
+d2 = datetime.date(2023, 6, 27)
+diff21 = (d2-d1).days
+print(diff21)
+print(str(cal.get()))
 
-# Start the GUI event loop
-window.mainloop()
+
+
+
+root.mainloop()

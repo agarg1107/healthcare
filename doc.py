@@ -260,25 +260,31 @@ def filldata():
     # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
     sheet5 = file.active
     setdata = StringVar()
-    count = 0
+    count = 1
     rows_to_delete = []
 
-    for item in my_tree.get_children():
-        values = my_tree.item(item)["values"]
+    for rowcheck in sheet5.rows:
+        if(Search.get() == rowcheck[0].value):
 
-        for row1 in sheet5.iter_rows():
-            count += 1
-
-            print(values[0])
-            if Search.get() == str(values[0]):
-                rows_to_delete.append(count)
+            rows_to_delete.append(count)
+        count = count +1
+    # for item in my_tree.get_children():
+    #     values = my_tree.item(item)["values"]
+    #
+    #     for row1 in sheet5.iter_rows():
+    #         count += 1
+    #
+    #         print(values[0])
+    #         if Search.get() == str(values[0]):
+    #             rows_to_delete.append(count)
 
     # Delete the rows in reverse order
+    print(rows_to_delete)
     for row_index in sorted(rows_to_delete, reverse=True):
         sheet5.delete_rows(row_index)
 
-    # Adjust the count variable if necessary
-    count -= len(rows_to_delete)
+
+    count  = 0
     for item in my_tree.get_children():
         values = my_tree.item(item)["values"]
         row = sheet5.max_row + 1
