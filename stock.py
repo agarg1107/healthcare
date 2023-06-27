@@ -55,46 +55,64 @@ def Clear():
     drug_free.set('0')
     drug_mrp.set('')
     drup_pp.set('')
+    drug_quan.set('')
 def Clear2():
-    saveButton.configure(state='active')
+
     drug_name.set('')
     drug_salt.set('')
     drug_batch.set('')
     drug_free.set('0')
     drug_mrp.set('')
     drup_pp.set('')
-
+    drug_quan.set('')
+def remove_all():
+	for record in my_tree.get_children():
+		my_tree.delete(record)
 def Save():
-    selected_date = cal.get_date()
-    year = selected_date.year
-    month = selected_date.month
-    day = selected_date.day
-    mainexpdate = datetime.date(year, month, day)
+    file = openpyxl.load_workbook(stockfiledata)
+    stockfile1 = file.active
+    setdata = StringVar()
+    for item in my_tree.get_children():
+        values = my_tree.item(item)["values"]
+        row = stockfile1.max_row + 1
+        for col, value in enumerate(values, start=1):
+            setdata.set(value)
+            stockfile1.cell(row=row, column=col, value=setdata.get())
 
-    daysleft = (mainexpdate - datetime.date.today()).days  # exp date
-    today_main_date = Date.get()  # today date
-    name = drug_name.get()  # name
-    salt = drug_salt.get() # salt
-    batch = drug_batch.get() #batch
-    mrp = drug_mrp.get() # mrp
-    pp = drup_pp.get() # free
-    free = drug_free.get()
-    if name == "" or batch == "" or mrp == "" or pp == "" or salt == "":
-        messagebox.showerror("“error", "Few Data is missing!")
-    else:
-        file = openpyxl.load_workbook(stockfiledata)
-        sheet = file.active
-        sheet.cell(column=1, row=sheet.max_row + 1, value=batch)
-        sheet.cell(column=2, row=sheet.max_row, value=name)
-        sheet.cell(column=3, row=sheet.max_row, value=salt)
-        sheet.cell(column=4, row=sheet.max_row, value=mrp)
-        sheet.cell(column=5, row=sheet.max_row, value=pp)
-        sheet.cell(column=6, row=sheet.max_row, value=free)
-        sheet.cell(column=7, row=sheet.max_row, value=today_main_date)
-        sheet.cell(column=8, row=sheet.max_row, value=daysleft)
-        file.save(stockfiledata)
-        Clear()  # clear entry box and image section
-first =0
+
+    # selected_date = cal.get_date()
+    # year = selected_date.year
+    # month = selected_date.month
+    # day = selected_date.day
+    # mainexpdate = datetime.date(year, month, day)
+    #
+    # daysleft = (mainexpdate - datetime.date.today()).days  # exp date
+    # today_main_date = Date.get()  # today date
+    # name = drug_name.get()  # name
+    # salt = drug_salt.get() # salt
+    # batch = drug_batch.get() #batch
+    # mrp = drug_mrp.get() # mrp
+    # pp = drup_pp.get() # free
+    # free = drug_free.get()
+    # quan = drug_quan.get()
+    # if name == "" or batch == "" or mrp == "" or pp == "" or salt == "" or quan == "":
+    #     messagebox.showerror("“error", "Few Data is missing!")
+    # else:
+    #     file = openpyxl.load_workbook(stockfiledata)
+    #     sheet = file.active
+    #     sheet.cell(column=1, row=sheet.max_row + 1, value=batch)
+    #     sheet.cell(column=2, row=sheet.max_row, value=name)
+    #     sheet.cell(column=3, row=sheet.max_row, value=salt)
+    #     sheet.cell(column=4, row=sheet.max_row, value=mrp)
+    #     sheet.cell(column=5, row=sheet.max_row, value=pp)
+    #     sheet.cell(column=6, row=sheet.max_row, value=free)
+    #     sheet.cell(column=7, row=sheet.max_row, value=today_main_date)
+    #     sheet.cell(column=8, row=sheet.max_row, value=daysleft)
+    #     sheet.cell(column=9, row=sheet.max_row, value=quan)
+    file.save(stockfiledata)
+    remove_all()
+        # Clear()  # clear entry box and image section
+
 def search():
     #  # text = Search.get()  # taking input from entry box
     # Clear()
@@ -207,13 +225,18 @@ drug_mrp = StringVar()
 drup_pp = StringVar()
 drug_free = StringVar()
 drug_batch = StringVar()
-
+drug_quan = StringVar()
+drug_hns = StringVar()
+drug_discount = StringVar()
+drug_sgst = StringVar()
+drug_cgst = StringVar()
+drug_amount = StringVar()
 obj = None
 
 expdate = StringVar()
 
 # top frames
-obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=1100, height=650, fg_color=obj_frame_col, border_width=4,
+obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=1250, height=650, fg_color=obj_frame_col, border_width=4,
                              border_color="black")
 obj.place(x=230, y=100)
 
@@ -259,47 +282,15 @@ Date.set(d1)
 #         count += 1
 def filldata():
     file = openpyxl.load_workbook(stockfiledata)
-    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
     sheet5 = file.active
     setdata = StringVar()
-    count = 1
-    rows_to_delete = []
-
-    # for rowcheck in sheet5.rows:
-    #     if(Search.get() == rowcheck[0].value):
-    #
-    #         rows_to_delete.append(count)
-    #     count = count +1
-    # # for item in my_tree.get_children():
-    # #     values = my_tree.item(item)["values"]
-    # #
-    # #     for row1 in sheet5.iter_rows():
-    # #         count += 1
-    # #
-    # #         print(values[0])
-    # #         if Search.get() == str(values[0]):
-    # #             rows_to_delete.append(count)
-    #
-    # # Delete the rows in reverse order
-    # print(rows_to_delete)
-    # for row_index in sorted(rows_to_delete, reverse=True):
-    #     sheet5.delete_rows(row_index)
-    #
-    #
-    # count  = 0
     for item in my_tree.get_children():
         values = my_tree.item(item)["values"]
         row = sheet5.max_row + 1
         for col, value in enumerate(values, start=1):
             setdata.set(value)
             sheet5.cell(row=row, column=col, value=setdata.get())
-
-    count =0
-
-
     file.save(stockfiledata)
-
-    # Close the workbook
     file.close()
 
 def gendays():
@@ -314,17 +305,24 @@ count = 0
 def remove_all():
 	for record in my_tree.get_children():
 		my_tree.delete(record)
-# frame
+
 def reg_page():
-    # Labels
+
     drug_free.set('0')
     customtkinter.CTkLabel(obj, text="BATCH:", text_color=textcolor, font=(fontmain, 20)).place(x=30, y=55)
     customtkinter.CTkLabel(obj, text="DRUG NAME:", text_color=textcolor, font=(fontmain, 20)).place(x=30, y=105)
-    customtkinter.CTkLabel(obj, text="SALT NAME:", text_color=textcolor, font=(fontmain, 20)).place(x=480, y=105)
-    customtkinter.CTkLabel(obj, text="MRP:", text_color=textcolor, font=(fontmain, 20)).place(x=480, y=155)
     customtkinter.CTkLabel(obj, text="PP:", text_color=textcolor, font=(fontmain, 20)).place(x=30, y=155)
     customtkinter.CTkLabel(obj, text="Free:", text_color=textcolor, font=(fontmain, 20)).place(x=30, y=205)
-    customtkinter.CTkLabel(obj, text="EXPIRE DATE:", text_color=textcolor, font=(fontmain, 20)).place(x=480, y=205)
+
+    customtkinter.CTkLabel(obj, text="SALT NAME:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=55)
+    customtkinter.CTkLabel(obj, text="Quantity:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=105)
+    customtkinter.CTkLabel(obj, text="MRP:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=155)
+    customtkinter.CTkLabel(obj, text="EXPIRE DATE:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=205)
+
+    customtkinter.CTkLabel(obj, text="HSN Code:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=55)
+    customtkinter.CTkLabel(obj, text="Discount:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=105)
+    customtkinter.CTkLabel(obj, text="SGST:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=155)
+    customtkinter.CTkLabel(obj, text="CGST:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=205)
 
 
     # Entry
@@ -336,28 +334,51 @@ def reg_page():
                                        textvariable=drug_name, height=40, font=(fontmain, 20),
                                        width=220)
     name_entry.place(x=170, y=100)
-    salt_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
-                                          textvariable=drug_salt, height=40,
-                                          font=(fontmain, 20), width=220)
-    salt_entry.place(x=630, y=100)
-    mrp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
-                                          textvariable=drug_mrp, height=40,
-                                          font=(fontmain, 20), width=220)
-    mrp_entry.place(x=630, y=150)
     pp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
-                                        textvariable=drup_pp, height=40,
-                                        font=(fontmain, 20), width=220)
+                                      textvariable=drup_pp, height=40,
+                                      font=(fontmain, 20), width=220)
     pp_entry.place(x=170, y=150)
     free_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
-                                         textvariable=drug_free, height=40,
-                                         font=(fontmain, 20), width=220)
+                                        textvariable=drug_free, height=40,
+                                        font=(fontmain, 20), width=220)
     free_entry.place(x=170, y=200)
 
 
+
+    salt_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                          textvariable=drug_salt, height=40,
+                                          font=(fontmain, 20), width=220)
+    salt_entry.place(x=600, y=50)
+    quan_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                        textvariable=drug_quan, height=40,
+                                        font=(fontmain, 20), width=220)
+    quan_entry.place(x=600, y=100)
+    mrp_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                          textvariable=drug_mrp, height=40,
+                                          font=(fontmain, 20), width=220)
+    mrp_entry.place(x=600, y=150)
     global cal
     cal = DateEntry(obj, width=22,
                     foreground='yellow', year=2023, tooltipbackground="yellow", font=(fontmain, 13))
-    cal.place(x=630, y=200)
+    cal.place(x=600, y=200)
+
+
+    hsn_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                        textvariable=drug_hns, height=40, font=(fontmain, 20),
+                                        width=220)
+    hsn_entry.place(x=1000, y=50)
+    disc_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                       textvariable=drug_discount, height=40, font=(fontmain, 20),
+                                       width=220)
+    disc_entry.place(x=1000, y=100)
+    sgst_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                      textvariable=drug_sgst, height=40,
+                                      font=(fontmain, 20), width=220)
+    sgst_entry.place(x=1000, y=150)
+    cgst_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                        textvariable=drug_cgst, height=40,
+                                        font=(fontmain, 20), width=220)
+    cgst_entry.place(x=1000, y=200)
 
     # def Clear():
     #     global pnt_dis
@@ -370,16 +391,19 @@ def reg_page():
      # exp date
     def add_record():
         daysleft = gendays()
+        getamount = float(drup_pp.get())*int(drug_quan.get())
+        formatted_number = f"{getamount:.3f}"
+        drug_amount.set(str(formatted_number))
         my_tree.tag_configure('oddrow', background="white")
         my_tree.tag_configure('evenrow', background="lightblue")
 
         global count
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft), tags=('evenrow',))
+                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get()), tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft), tags=('oddrow',))
+                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get()), tags=('oddrow',))
 
         count += 1
 
@@ -443,32 +467,52 @@ def reg_page():
     tree_scroll.configure(command=my_tree.yview)
 
     # Define Our Columns
-    my_tree['columns'] = ("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days")
+    my_tree['columns'] = ("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days","Quantity","HSN","Discount","SGST","CGST","Amount")
 
     # Formate Our Columns
     my_tree.column("#0", width=0, stretch=NO)
-    my_tree.column("Batch", anchor=W, width=140)
-    my_tree.column("Name", anchor=CENTER, width=100)
-    my_tree.column("Salt", anchor=W, width=140)
-    my_tree.column("Mrp", anchor=W, width=140)
-    my_tree.column("PP", anchor=CENTER, width=100)
-    my_tree.column("Free", anchor=W, width=140)
-    my_tree.column("Days", anchor=W, width=140)
-
+    my_tree.column("Batch", anchor=W, width=120)
+    my_tree.column("Name", anchor=W, width=220)
+    my_tree.column("Salt", anchor=W, width=220)
+    my_tree.column("Mrp", anchor=W, width=60)
+    my_tree.column("PP", anchor=W, width=60)
+    my_tree.column("Free", anchor=W, width=60)
+    my_tree.column("Days", anchor=W, width=60)
+    my_tree.column("Quantity", anchor=W, width=60)
+    my_tree.column("HSN", anchor=W, width=60)
+    my_tree.column("Discount", anchor=W, width=60)
+    my_tree.column("SGST", anchor=W, width=60)
+    my_tree.column("CGST", anchor=W, width=60)
+    my_tree.column("Amount", anchor=W, width=60)
     # Create Headings
     my_tree.heading("#0", text="", anchor=W)
     my_tree.heading("Batch", text="Batch", anchor=W)
-    my_tree.heading("Name", text="Name", anchor=CENTER)
+    my_tree.heading("Name", text="Name", anchor=W)
     my_tree.heading("Salt", text="Salt", anchor=W)
     my_tree.heading("Mrp", text="Mrp", anchor=W)
     my_tree.heading("PP", text="PP", anchor=W)
     my_tree.heading("Free", text="Free", anchor=W)
     my_tree.heading("Days", text="Days", anchor=W)
+    my_tree.heading("Quantity", text="Quantity", anchor=W)
+    my_tree.heading("HSN", text="HSN", anchor=W)
+    my_tree.heading("Discount", text="Discount", anchor=W)
+    my_tree.heading("SGST", text="SGST", anchor=W)
+    my_tree.heading("CGST", text="CGST", anchor=W)
+    my_tree.heading("Amount", text="Amount", anchor=W)
+
     # updatetree()
 
     # Create striped row tags
     my_tree.tag_configure('oddrow', background="white")
     my_tree.tag_configure('evenrow', background="lightblue")
+    saveButton = customtkinter.CTkButton(obj, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable",
+                                         width=150,
+                                         corner_radius=10, border_width=2, border_color="black", border_spacing=2,
+                                         height=40, command=Save)
+    saveButton.place(x=50, y=580)
+    customtkinter.CTkButton(obj, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+                            corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
+                            command=Clear2).place(x=250, y=580)
 
 def bill_page():
     Label(obj, text="Full Name:", font="arial 13", bg=framebg, fg=framefg).place(x=30, y=50)
@@ -507,7 +551,7 @@ option_frame = customtkinter.CTkFrame(master=root, corner_radius=0, fg_color=sid
 my_image = customtkinter.CTkImage(light_image=Image.open("stock-removebg-preview.png"),
                                   dark_image=Image.open("stock-removebg-preview.png"),
                                   size=(40, 40))
-reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolorlite, hover="disable", text='Registration',
+reg_btn = customtkinter.CTkButton(option_frame, image=my_image, fg_color=buttoncolorlite, hover="disable", text='Stock Update',
                                   width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                   height=40, command=lambda: indicate(reg_indicate, 1, reg_page))
 reg_btn.place(x=15, y=50)
@@ -551,18 +595,12 @@ srchimage = customtkinter.CTkImage(light_image=Image.open("stock-removebg-previe
 #                                height=40)
 # Srch.place(x=1350, y=70)
 
-customtkinter.CTkButton(root, text="Upload", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
-                        corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Update).place(x=1300, y=370)
-saveButton = customtkinter.CTkButton(root, text="Save", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
-                                     corner_radius=10, border_width=2, border_color="black", border_spacing=2,
-                                     height=40, command=Save)
-saveButton.place(x=1300, y=450)
-customtkinter.CTkButton(root, text="Reset", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
-                        corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Clear2).place(x=1300, y=530)
-customtkinter.CTkButton(root, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
-                        corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
-                        command=Exit).place(x=1300, y=610)
+# customtkinter.CTkButton(root, text="Upload", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+#                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
+#                         command=Update).place(x=1300, y=370)
+
+# customtkinter.CTkButton(root, text="Exit", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
+#                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
+#                         command=Exit).place(x=1300, y=610)
 
 root.mainloop()
