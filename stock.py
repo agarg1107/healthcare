@@ -12,6 +12,7 @@ import pathlib
 import tkinter as tk
 import customtkinter
 from tkinter import ttk
+import textwrap
 customtkinter.set_appearance_mode("System")
 
 textcolor = "#333333"
@@ -231,6 +232,9 @@ drug_discount = StringVar()
 drug_sgst = StringVar()
 drug_cgst = StringVar()
 drug_amount = StringVar()
+drug_form = StringVar()
+drug_gst = StringVar()
+drug_date = StringVar()
 obj = None
 
 expdate = StringVar()
@@ -292,7 +296,8 @@ def filldata():
             sheet5.cell(row=row, column=col, value=setdata.get())
     file.save(stockfiledata)
     file.close()
-
+def wrap(string, lenght=8):
+    return '\n'.join(textwrap.wrap(string, lenght))
 def gendays():
     selected_date = cal.get_date()
     year = selected_date.year
@@ -318,12 +323,13 @@ def reg_page():
     customtkinter.CTkLabel(obj, text="Quantity:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=105)
     customtkinter.CTkLabel(obj, text="MRP:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=155)
     customtkinter.CTkLabel(obj, text="EXPIRE DATE:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=205)
+    customtkinter.CTkLabel(obj, text="FORM NAME:", text_color=textcolor, font=(fontmain, 20)).place(x=450, y=255)
 
     customtkinter.CTkLabel(obj, text="HSN Code:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=55)
     customtkinter.CTkLabel(obj, text="Discount:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=105)
     customtkinter.CTkLabel(obj, text="SGST:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=155)
     customtkinter.CTkLabel(obj, text="CGST:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=205)
-
+    customtkinter.CTkLabel(obj, text="FORM GST:", text_color=textcolor, font=(fontmain, 20)).place(x=870, y=255)
 
     # Entry
     batch_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
@@ -361,6 +367,10 @@ def reg_page():
     cal = DateEntry(obj, width=22,
                     foreground='yellow', year=2023, tooltipbackground="yellow", font=(fontmain, 13))
     cal.place(x=600, y=200)
+    form_name_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                            textvariable=drug_form, height=40,
+                                            font=(fontmain, 20), width=220)
+    form_name_entry.place(x=600, y=250)
 
 
     hsn_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
@@ -379,6 +389,10 @@ def reg_page():
                                         textvariable=drug_cgst, height=40,
                                         font=(fontmain, 20), width=220)
     cgst_entry.place(x=1000, y=200)
+    form_gst_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor, fg_color=background, corner_radius=15,
+                                        textvariable=drug_gst, height=40,
+                                        font=(fontmain, 20), width=220)
+    form_gst_entry.place(x=1000, y=250)
 
     # def Clear():
     #     global pnt_dis
@@ -392,6 +406,8 @@ def reg_page():
     def add_record():
         daysleft = gendays()
         getamount = float(drup_pp.get())*int(drug_quan.get())
+        gettodaydate = datetime.date.today()
+        drug_date.set(gettodaydate)
         formatted_number = f"{getamount:.3f}"
         drug_amount.set(str(formatted_number))
         my_tree.tag_configure('oddrow', background="white")
@@ -400,10 +416,10 @@ def reg_page():
         global count
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get()), tags=('evenrow',))
+                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get(),drug_form.get(),drug_gst.get(),drug_date.get()), tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get()), tags=('oddrow',))
+                           values=(drug_batch.get(), drug_name.get(), drug_salt.get(), drug_mrp.get(),drup_pp.get(),drug_free.get(),daysleft,drug_quan.get(),drug_hns.get(),drug_discount.get(),drug_sgst.get(),drug_cgst.get(),drug_amount.get(),drug_form.get(),drug_gst.get(),drug_date.get()), tags=('oddrow',))
 
         count += 1
 
@@ -441,7 +457,7 @@ def reg_page():
     style.configure("Treeview",
                     background=background,
                     foreground="black",
-                    rowheight=20,
+                    rowheight=22,
                     fieldbackground=mainbackground
                     )
     # Change selected color
@@ -450,24 +466,37 @@ def reg_page():
 
     # Create Treeview Frame
     tree_frame = Frame(obj)
-    tree_frame.place(x=20, y=340)
+    tree_frame.place(x=20, y=340,height=230,width=1200)
 
     # Treeview Scrollbar
-    tree_scroll = customtkinter.CTkScrollbar(tree_frame, corner_radius=9, fg_color=mainbackground,
-                                             button_color=background)
-    tree_scroll.pack(side=RIGHT, fill=Y)
+
+    scroll_x = customtkinter.CTkScrollbar(tree_frame,orientation=HORIZONTAL,width=1200,height = 22,corner_radius=9, fg_color=mainbackground,
+                                          button_color=background)
+    scroll_y = customtkinter.CTkScrollbar(tree_frame, orientation=VERTICAL,width=22,height = 210,corner_radius=9, fg_color=mainbackground,
+                                       button_color=background)
+    # tree_scroll = customtkinter.CTkScrollbar(tree_frame, corner_radius=9, fg_color=mainbackground,
+    #                                          button_color=background)
+    # tree_scroll.pack(side=RIGHT, fill=Y)
+
 
     # Create Treeview
     global my_tree
-    my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set, selectmode="extended")
+    main_tree_frame = Frame(tree_frame)
+    main_tree_frame.place(x=0, y=0, height=208, width=1178)
+    my_tree = ttk.Treeview(main_tree_frame)
     # Pack to the screen
     my_tree.pack()
-
+    my_tree.configure(yscrollcommand=scroll_y.set,xscrollcommand=scroll_x.set)
+    my_tree.configure(selectmode="extended")
     # Configure the scrollbar
-    tree_scroll.configure(command=my_tree.yview)
-
+    scroll_x.configure(command=my_tree.xview)
+    scroll_y.configure(command=my_tree.yview)
+    # tree_scroll.configure(command=my_tree.yview)
+    scroll_x.place(x=0,y=208)
+    scroll_y.place(x=1178,y=0)
     # Define Our Columns
-    my_tree['columns'] = ("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days","Quantity","HSN","Discount","SGST","CGST","Amount")
+    my_tree.configure(columns=("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days","Quantity","HSN","Discount","SGST","CGST","Amount","Form Name","Form Number","Date"))
+    # my_tree['columns'] = ("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days","Quantity","HSN","Discount","SGST","CGST","Amount")
 
     # Formate Our Columns
     my_tree.column("#0", width=0, stretch=NO)
@@ -484,6 +513,10 @@ def reg_page():
     my_tree.column("SGST", anchor=W, width=60)
     my_tree.column("CGST", anchor=W, width=60)
     my_tree.column("Amount", anchor=W, width=60)
+    my_tree.column("Form Name", anchor=W, width=220)
+    my_tree.column("Form Number", anchor=W, width=200)
+    my_tree.column("Date", anchor=W, width=80)
+
     # Create Headings
     my_tree.heading("#0", text="", anchor=W)
     my_tree.heading("Batch", text="Batch", anchor=W)
@@ -499,6 +532,10 @@ def reg_page():
     my_tree.heading("SGST", text="SGST", anchor=W)
     my_tree.heading("CGST", text="CGST", anchor=W)
     my_tree.heading("Amount", text="Amount", anchor=W)
+    my_tree.heading("Form Name", text="Form Name", anchor=W)
+    my_tree.heading("Form Number", text="Form Number", anchor=W)
+    my_tree.heading("Date", text="Date", anchor=W)
+
 
     # updatetree()
 

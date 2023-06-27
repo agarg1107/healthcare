@@ -307,10 +307,10 @@ def remove_all():
 		my_tree.delete(record)
 def reg_page():
 
-    file = openpyxl.load_workbook(doc_med_old)
+    file = openpyxl.load_workbook("Stock.xlsx")
     sheet3 = file.active
     for i in sheet3.rows:
-        docmedslst.append(i[0].value)
+        docmedslst.append(i[2].value)
 
     # Labels
     customtkinter.CTkLabel(obj, text="Full Name:", text_color=textcolor,font=(fontmain, 20)).place(x=30, y=55)
@@ -391,11 +391,12 @@ def reg_page():
 
     # Create a list of pizza toppings
     toppings = []
-    file = openpyxl.load_workbook(doc_med_old)
+    file = openpyxl.load_workbook("Stock.xlsx")
     sheet = file.active
 
     for row in sheet.rows:
-        toppings.append(row[0].value)
+        if(row[2].value != None):
+            toppings.append(row[2].value)
 
     # Add the toppings to our list
     update(toppings)
@@ -429,16 +430,33 @@ def reg_page():
         # registration_no()
 
     def add_record():
+        sno =1
+
+        for i in docmedslst:
+            print(i)
+            print(med_name.get())
+            if(med_name.get() != i):
+                print("------------------------------")
+                print(i)
+                print(med_name.get())
+                sno = sno +1
+                print("--------------------------------")
+            else:
+                break
+        file = openpyxl.load_workbook("Stock.xlsx")
+        sheet = file.active
+        col = "B"
+        main_drug_name = sheet[f"{col}{sno}"].value
         my_tree.tag_configure('oddrow', background="white")
         my_tree.tag_configure('evenrow', background="lightblue")
 
         global count
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(Registration.get(), med_name.get(), days.get(),dose.get()), tags=('evenrow',))
+                           values=(Registration.get(), main_drug_name, days.get(),dose.get()), tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text="",
-                           values=(Registration.get(), med_name.get(), days.get(),dose.get()), tags=('oddrow',))
+                           values=(Registration.get(), main_drug_name, days.get(),dose.get()), tags=('oddrow',))
 
         count += 1
 

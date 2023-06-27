@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\docmed.xlsx">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\patient.xlsx">
           <value>
             <Attribute>
