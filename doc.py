@@ -109,8 +109,7 @@ else:
     file.save(pathmain)
 
 
-def update():
-    root.after(1000, update)  # run itself again after 1000 ms
+
 def Exit():
     root.destroy()
 # def registration_no():
@@ -160,8 +159,7 @@ def Save():
 def search():
     text = Search.get()  # taking input from entry box
 
-    Clear()  # to clear all the data already available in entry box and other
-  # after clicking on search , save button will disable so that no one can click on
+    Clear()
 
     file = openpyxl.load_workbook(pathmain)
     sheet = file.active
@@ -299,8 +297,6 @@ def filldata():
 
     # Close the workbook
     file.close()
-
-
 
 def remove_all():
 	for record in my_tree.get_children():

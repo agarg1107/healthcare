@@ -1,4 +1,4 @@
-
+from docxtpl import DocxTemplate
 from tkcalendar import Calendar, DateEntry
 import datetime
 from tkinter import *
@@ -13,6 +13,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import ttk
 import textwrap
+from CTkMessagebox import CTkMessagebox
 customtkinter.set_appearance_mode("System")
 
 textcolor = "#333333"
@@ -24,13 +25,11 @@ obj_frame_col = "#9F9FED"
 mainbackground = "#736ced"
 framebg = "#EDEDED"
 framefg = "#06283D"
-root = Tk()
-
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-
+root = customtkinter.CTk()
+root.iconbitmap('D:\Programming\Ai and Ml\Machine learning tut\healthcare\stock-removebg-preview.ico')
 root.title("Clinic Managment System")
 root.state('zoomed')
+
 # root.geometry ("%dx%d"%(width,height))
 root.config(bg=mainbackground)
 # pathmain = "//LAPTOP-F1A0LRP8/Users/aman/Student_data.xlsx"
@@ -216,6 +215,8 @@ def Update():
 
 
 
+patient_name = StringVar()
+docter_name = StringVar()
 
 
 fontmain = "Dotum"
@@ -239,9 +240,17 @@ obj = None
 
 expdate = StringVar()
 
+
+quan_bill = StringVar()
+med_name = StringVar()
+Search = StringVar()
+data = []
+maintainstock = []
+
+
 # top frames
 obj = customtkinter.CTkFrame(master=root, corner_radius=15, width=1250, height=650, fg_color=obj_frame_col, border_width=4,
-                             border_color="black")
+                             border_color="black",bg_color=mainbackground)
 obj.place(x=230, y=100)
 
 Label(root, text="Clinic Management", width=10, height=2, bg="#c36464", fg='#fff', font='arial 20 bold').pack(side=TOP,
@@ -551,11 +560,439 @@ def reg_page():
                             corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,
                             command=Clear2).place(x=250, y=580)
 
+def remove_all():
+	for record in my_tree.get_children():
+		my_tree.delete(record)
+def search_patient():
+
+    text = Search.get()
+
+    # Clear()
+
+    file = openpyxl.load_workbook("Student_data.xlsx")
+    sheet = file.active
+
+    for row in sheet.rows:
+        if row[0].value == int(text):
+            name = row[0]
+            reg_no_position = str(name)[14:-1]
+            reg_number = str(name)[15:-1]
+            try:
+                print(str(name))
+            except:
+                messagebox.showerror("Invalid", "Invalid registration number! !!")
+
+    x1 = sheet.cell(row=int(reg_number), column=2).value
+    x2 = sheet.cell(row=int(reg_number), column=2).value
+
+    patient_name.set(x1)
+    docter_name.set(x2)
+    updatetree()
+def updatetree():
+
+    remove_all()
+    data.clear()
+
+    file = openpyxl.load_workbook("patient.xlsx")
+    # sheet.cell(column=1, row=sheet.max_row + 1, value=med_no)
+    sheet1 = file.active
+
+    for row in sheet1.rows:
+        lst = []
+        if Search.get() == row[0].value:
+            lst.append(row[0].value)
+            lst.append(row[1].value)
+            lst.append(row[2].value)
+            lst.append(row[3].value)
+            data.append(lst)
+
+    global count
+    count = 0
+
+    for record in data:
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text="", values=(record[0], record[1], record[2],record[3]),
+                           tags=('oddrow',))
+
+        count += 1
+
+def get_row_values(file_path,row_number, column_indices=None, column_names=None):
+    file = openpyxl.load_workbook("Stock.xlsx")
+    sheet = file.active
+    row_values = []
+    row_values = []
+    for col_index in column_indices:
+        cell = sheet.cell(row=row_number, column=col_index)
+        row_values.append(cell.value)
+
+    file.close()
+
+    return row_values
 def bill_page():
-    Label(obj, text="Full Name:", font="arial 13", bg=framebg, fg=framefg).place(x=30, y=50)
+    def get_treeview_data(treeview):
+        data = []
+        count = 1
+        for item in treeview.get_children():
+            values = treeview.item(item)['values']
+            values.insert(0, count)  # Insert the counter at the beginning of the values list
+            data.append(values)
+            count += 1
+        return data
+
+
+    customtkinter.CTkEntry(master=obj, corner_radius=15, text_color=textcolor, fg_color=background,
+                           textvariable=Search, placeholder_text="search", height=40,
+                           font=(fontmain, 20), width=220).place(x=700, y=270)
+    customtkinter.CTkLabel(obj, text="Quantity", text_color=textcolor, font=(fontmain, 20)).place(x=1000, y=120)
+    customtkinter.CTkEntry(master=obj, corner_radius=15, text_color=textcolor, fg_color=background,
+                           textvariable=quan_bill, height=40,
+                           font=(fontmain, 20), width=220).place(x=1000, y=170)
+    Srch = customtkinter.CTkButton(obj, text="Search", command=search_patient, image=srchimage, fg_color=buttoncolor,
+                                   hover="disable",
+                                   width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
+                                   height=40)
+    Srch.place(x=1000, y=270)
+
+    def update(data):
+        # Clear the listbox
+        my_list.delete(0, END)
+
+        # Add toppings to listbox
+        for item in data:
+            my_list.insert(END, item)
+    def fillout(e):
+        my_entry.delete(0, END)
+
+        selected_item = my_list.get(ANCHOR)
+        my_entry.insert(0, selected_item)
+
+        my_list.selection_clear(0, END)
+    def check(e):
+        # grab what was typed
+        typed = my_entry.get()
+
+        if typed == '':
+            data = toppings
+        else:
+            data = []
+            for item in toppings:
+                if typed.lower() in item.lower():
+                    data.append(item)
+
+        # update our listbox with selected items
+        update(data)
+
+    customtkinter.CTkLabel(obj, text="Search", text_color=textcolor, font=(fontmain, 20)).place(x=700, y=10)
+    my_entry = customtkinter.CTkEntry(master=obj, text_color=textcolor,fg_color=background,corner_radius=10, textvariable=med_name, height=30,
+                                        font=(fontmain, 20), width=240)
+    my_entry.place(x=700, y=50)
+
+    my_list = Listbox(obj, width=40,bd=0,background=background)
+    my_list.place(x=700, y=90)
+
+    # Create a list of pizza toppings
+    toppings = []
+    file = openpyxl.load_workbook("Stock.xlsx")
+    sheet = file.active
+
+    for row in sheet.rows:
+        if(row[1].value != None):
+            toppings.append(row[1].value)
+
+    # Add the toppings to our list
+    update(toppings)
+
+    # Create a binding on the listbox onclick
+    my_list.bind("<<ListboxSelect>>", fillout)
+
+    # Create a binding on the entry box
+    my_entry.bind("<KeyRelease>", check)
+    style = ttk.Style()
+    # Pick a theme
+    style.theme_use("clam")
+    # Configure our treeview colors
+
+    style.configure("Treeview",
+                    background=background,
+                    foreground="black",
+                    rowheight=20,
+                    fieldbackground=mainbackground
+                    )
+    # Change selected color
+    style.map('Treeview',
+              background=[('selected', 'blue')])
+
+    # Create Treeview Frame
+    tree_frame = Frame(obj)
+    tree_frame.place(x=20, y=20)
+
+    # Treeview Scrollbar
+    tree_scroll = customtkinter.CTkScrollbar(tree_frame, corner_radius=9, fg_color=mainbackground,
+                                             button_color=background)
+    tree_scroll.pack(side=RIGHT, fill=Y)
+
+    # Create Treeview
+    global my_tree
+    my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set, selectmode="extended")
+    # Pack to the screen
+    my_tree.pack()
+
+    # Configure the scrollbar
+    tree_scroll.configure(command=my_tree.yview)
+
+    # Define Our Columns
+    my_tree['columns'] = ("Token", "Name", "Dose", "Days")
+
+    # Formate Our Columns
+    my_tree.column("#0", width=0, stretch=NO)
+    my_tree.column("Name", anchor=W, width=140)
+    my_tree.column("Dose", anchor=CENTER, width=100)
+    my_tree.column("Days", anchor=W, width=140)
+    my_tree.column("Token", anchor=W, width=140)
+
+    # Create Headings
+    my_tree.heading("#0", text="", anchor=W)
+    my_tree.heading("Name", text="Name", anchor=W)
+    my_tree.heading("Dose", text="Dose", anchor=CENTER)
+    my_tree.heading("Days", text="Days", anchor=W)
+    my_tree.heading("Token", text="Token", anchor=W)
+    updatetree()
+
+    # Create striped row tags
+    my_tree.tag_configure('oddrow', background="white")
+    my_tree.tag_configure('evenrow', background="lightblue")
+
+
+    def add_record():
+        compare_value = my_entry.get()
+        file = openpyxl.load_workbook("Stock.xlsx")
+        sheet = file.active
+        flag = 0
+        row_num =0
+        for row in sheet.rows:
+            row_num = row_num +1
+            if row[1].value == compare_value:
+                if int(row[7].value) < int(quan_bill.get()) or int(row[6].value) <= 0:
+                    flag =1
+                else:
+                    flag =0
+                break
+
+        if(flag == 0):
+            lst_stock = []
+            file = openpyxl.load_workbook("Stock.xlsx")
+            sheet = file.active
+            main_file_name = "Stock.xlsx"
+            row_values = []
+            columns = [2,1,7,5,4,8,11,12]
+            row_values = get_row_values(main_file_name, row_num, column_indices=columns)
+            print(row_values)
+            final_val = int(row_values[5])-int(quan_bill.get())
+            sheet.cell(column=8, row=int(row_num), value=final_val)
+            total_amount = int(quan_bill.get()) * float(row_values[4])
+            my_tree2.tag_configure('oddrow', background="white")
+            my_tree2.tag_configure('evenrow', background="lightblue")
+            file.save("Stock.xlsx")
+            global count
+            if count % 2 == 0:
+                my_tree2.insert(parent='', index='end', iid=count, text="",
+                                values=(
+                                    row_values[0], row_values[1], row_values[2], row_values[3], row_values[4],
+                                    quan_bill.get(), row_values[5], row_values[6],total_amount), tags=('evenrow'))
+            else:
+                my_tree2.insert(parent='', index='end', iid=count, text="",
+                                values=(
+                                    row_values[0], row_values[1], row_values[2], row_values[3], row_values[4],
+                                    quan_bill.get(), row_values[5], row_values[6], total_amount), tags=('oddrow'))
+
+            count += 1
+        else:
+            CTkMessagebox(message="CTkMessagebox is successfully installed.",
+                          icon="check", option_1="Thanks")
 
 
 
+    def find_item_in_list(lst, item):
+        try:
+            index = lst.index(item)
+            return False
+        except ValueError:
+            return True
+
+    #     x = my_tree2.selection()[0]
+    def delmed():
+        selection = my_tree2.selection()
+        if selection:
+            x = selection[0]
+            values = my_tree2.item(x)['values']
+            my_tree2.delete(x)
+
+            # Open the Excel file
+            file_path = "Stock.xlsx"
+            file = openpyxl.load_workbook(file_path)
+
+            # Get the active sheet
+            sheet = file.active
+            # for row in sheet.rows:
+            #     row_num = row_num + 1
+            #     if row[1].value == compare_value:
+            #         if int(row[7].value) < int(quan_bill.get()) or int(row[6].value) <= 0:
+            #             flag = 1
+            #         else:
+            #             flag = 0
+            #         break
+            # Find the first element of the value in the Excel sheet
+            row_num = 0
+            for row in sheet.rows:
+                row_num = row_num + 1
+                if row[1].value == values[0]:
+                    cell = sheet.cell(row=row_num, column=8)
+                    cell.value = str(int(cell.value) + int(values[5]))
+                    sheet.cell(row=row_num, column=8,value = cell.value)
+
+            # Save the changes
+            file.save(file_path)
+            file.close()
+
+            return values
+        else:
+            return None
+    # def delmed():
+    #     x = my_tree2.selection()[0]
+    #     my_tree2.delete(x)
+
+    add_btn = customtkinter.CTkButton(obj, text='ADD', hover="disable",
+                                      fg_color=buttoncolorlite, width=80, corner_radius=10, border_width=2,
+                                      border_color="black", border_spacing=2, height=40, command=lambda: add_record()
+                                      )
+    add_btn.place(x=30, y=280)
+    delete_btn = customtkinter.CTkButton(obj, text='DELETE', hover="disable",
+                                         fg_color=buttoncolorlite, width=100, corner_radius=10, border_width=2,
+                                         border_color="black", border_spacing=2, height=40,
+                                         command=lambda: delmed()
+                                         )
+    delete_btn.place(x=140, y=280)
+    #     excel
+
+    style = ttk.Style()
+    # Pick a theme
+    style.theme_use("clam")
+    # Configure our treeview colors
+
+    style.configure("Treeview",
+                    background=background,
+                    foreground="black",
+                    rowheight=22,
+                    fieldbackground=mainbackground
+                    )
+    # Change selected color
+    style.map('Treeview',
+              background=[('selected', 'blue')])
+
+    # Create Treeview Frame
+    tree_frame = Frame(obj)
+    tree_frame.place(x=20, y=540,height=230,width=785)
+
+    # Treeview Scrollbar
+
+    scroll_x = customtkinter.CTkScrollbar(tree_frame,orientation=HORIZONTAL,width=785,height = 22,corner_radius=9, fg_color=mainbackground,
+                                          button_color=background)
+    scroll_y = customtkinter.CTkScrollbar(tree_frame, orientation=VERTICAL,width=22,height = 210,corner_radius=9, fg_color=mainbackground,
+                                       button_color=background)
+    # tree_scroll = customtkinter.CTkScrollbar(tree_frame, corner_radius=9, fg_color=mainbackground,
+    #                                          button_color=background)
+    # tree_scroll.pack(side=RIGHT, fill=Y)
+
+
+    # Create Treeview
+    global my_tree2
+    main_tree_frame = Frame(tree_frame)
+    main_tree_frame.place(x=0, y=0, height=208, width=763)
+    my_tree2 = ttk.Treeview(main_tree_frame)
+    # Pack to the screen
+    my_tree2.pack()
+    my_tree2.configure(yscrollcommand=scroll_y.set,xscrollcommand=scroll_x.set)
+    my_tree2.configure(selectmode="extended")
+    # Configure the scrollbar
+    scroll_x.configure(command=my_tree2.xview)
+    scroll_y.configure(command=my_tree2.yview)
+    # tree_scroll.configure(command=my_tree.yview)
+    scroll_x.place(x=0,y=208)
+    scroll_y.place(x=763,y=0)
+    # Define Our Columns
+    my_tree2.configure(columns=("Name","Batch","Days", "PP", "Mrp","Quantity","SGST","CGST","Amount"))
+    # my_tree['columns'] = ("Batch", "Name", "Salt", "Mrp", "PP", "Free","Days","Quantity","HSN","Discount","SGST","CGST","Amount")
+
+    # Formate Our Columns
+    my_tree2.column("#0", width=0, stretch=NO)
+    my_tree2.column("Name", anchor=W, width=220)
+    my_tree2.column("Batch", anchor=W, width=120)
+    my_tree2.column("Days", anchor=W, width=60)
+    my_tree2.column("PP", anchor=W, width=60)
+    my_tree2.column("Mrp", anchor=W, width=60)
+    my_tree2.column("Quantity", anchor=W, width=60)
+    my_tree2.column("SGST", anchor=W, width=60)
+    my_tree2.column("CGST", anchor=W, width=60)
+    my_tree2.column("Amount", anchor=W, width=60)
+
+    # my_tree2.column("Salt", anchor=W, width=220)#-------------------
+    # my_tree2.column("Free", anchor=W, width=60)#-------------------
+    # my_tree2.column("HSN", anchor=W, width=60)#-------------------
+    # my_tree2.column("Discount", anchor=W, width=60)#-------------------
+    # my_tree2.column("Form Name", anchor=W, width=220)#-------------------
+    # my_tree2.column("Form Number", anchor=W, width=200)#-------------------
+    # my_tree2.column("Date", anchor=W, width=80)#-------------------
+
+    # Create Headings
+    my_tree2.heading("#0", text="", anchor=W)
+    my_tree2.heading("Name", text="Name", anchor=W)
+    my_tree2.heading("Batch", text="Batch", anchor=W)
+    my_tree2.heading("Days", text="Days", anchor=W)
+    my_tree2.heading("PP", text="PP", anchor=W)
+    my_tree2.heading("Mrp", text="Mrp", anchor=W)
+    my_tree2.heading("Quantity", text="Quantity", anchor=W)
+    my_tree2.heading("SGST", text="SGST", anchor=W)
+    my_tree2.heading("CGST", text="CGST", anchor=W)
+    my_tree2.heading("Amount", text="Amount", anchor=W)
+
+
+    # my_tree2.heading("Salt", text="Salt", anchor=W) #-------------------
+    # my_tree2.heading("Free", text="Free", anchor=W)#-------------------
+    # my_tree2.heading("HSN", text="HSN", anchor=W)#-------------------
+    # my_tree2.heading("Discount", text="Discount", anchor=W)#-------------------
+    # my_tree2.heading("Form Name", text="Form Name", anchor=W)#-------------------
+    # my_tree2.heading("Form Number", text="Form Number", anchor=W)#-------------------
+    # my_tree2.heading("Date", text="Date", anchor=W)#-------------------
+    def save_the_bill():
+        doc = DocxTemplate("medical_bill_tamplet.docx")
+        name = Search.get()+patient_name.get()+docter_name.get()
+        # phone = phone_entry.get()
+        invoice_list  = get_treeview_data(my_tree2)
+        print(invoice_list)
+        subtotal = sum(float(item[3]) for item in invoice_list)
+        salestax = 0.1
+        total = subtotal * (1 - salestax)
+
+        doc.render({"patientname": patient_name.get(),
+                    "docname": docter_name.get(),
+                    "date": datetime.date.today(),
+                    "sno": "1",
+                    "invoice_list": invoice_list,
+                    "grandtotal": str(salestax * 100) + "%",
+                    "total": subtotal})
+
+        doc_name = "new_invoice" + name + datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S") + ".docx"
+        doc.save(doc_name)
+
+        messagebox.showinfo("Invoice Complete", "Invoice Complete")
+    save_bill = customtkinter.CTkButton(obj, text="Save", command=save_the_bill, image=srchimage, fg_color=buttoncolor,
+                                   hover="disable",
+                                   width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
+                                   height=40)
+    save_bill.place(x=1000, y=590)
 def del_page():
     for frame in obj.winfo_children():
         frame.destroy()
