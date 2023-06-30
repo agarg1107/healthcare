@@ -9,6 +9,8 @@ import pathlib
 import tkinter as tk
 import customtkinter
 
+import dialogbox
+
 customtkinter.set_appearance_mode("System")
 textcolor = "#333333"
 side_frame_col = "#F2DFD7"
@@ -165,6 +167,72 @@ def Save():
 
 
 first =0
+def search2():
+    text = Search.get()  # taking input from entry box
+
+    Clear()  # to clear all the data already available in entry box and other
+    saveButton.configure(
+        state='disable')  # after clicking on search , save button will disable so that no one can click on
+
+    file = openpyxl.load_workbook(pathmain)
+    sheet = file.active
+    if(text == ""):
+        messagebox.showerror("Invalid", "Please enter mobile number")
+        return
+    for row in sheet.rows:
+        if row[12].value == int(text):
+            name = row[12]
+            reg_no_position = str(name)[14:-1]
+            global first
+            first =1;
+            reg_number = str(name)[15:-1]
+            try:
+                print(str(name))
+            except:
+                messagebox.showerror("Invalid", "Invalid registration number! !!")
+    if(first == 0):
+        messagebox.showerror("Invalid", "Invalid registration number! !!")
+        return
+    x1 = sheet.cell(row=int(reg_number), column=1).value
+    x2 = sheet.cell(row=int(reg_number), column=2).value
+    x3 = sheet.cell(row=int(reg_number), column=3).value
+    x4 = sheet.cell(row=int(reg_number), column=4).value
+    x5 = sheet.cell(row=int(reg_number), column=5).value
+    x6 = sheet.cell(row=int(reg_number), column=6).value
+    x7 = sheet.cell(row=int(reg_number), column=7).value
+    x8 = sheet.cell(row=int(reg_number), column=8).value
+    x9 = sheet.cell(row=int(reg_number), column=9).value
+    x10 = sheet.cell(row=int(reg_number), column=10).value
+    x11 = sheet.cell(row=int(reg_number), column=11).value
+    x12 = sheet.cell(row=int(reg_number), column=12).value
+    x13 = sheet.cell(row=int(reg_number), column=13).value
+    x14 = sheet.cell(row=int(reg_number), column=14).value
+
+    Registration.set(x1)
+    Name.set(x2)
+
+
+    if x4 == "Female":
+        R2.select()
+
+    else:
+        R1.select()
+
+    age.set(x5)
+
+    Date.set(x6)
+
+    weight.set(x7)
+
+    height.set(x8)
+    temprature.set(x9)
+
+    respiration.set(x10)
+    pulse.set(x11)
+    bp.set(x12)
+    village.set(x13)
+    mobile.set(x14)
+    first =0;
 def search():
     text = Search.get()  # taking input from entry box
 
@@ -474,10 +542,14 @@ imageicon3 = PhotoImage(file="Images/search.png")
 srchimage = customtkinter.CTkImage(light_image=Image.open("stock-removebg-preview.png"),
                                    dark_image=Image.open("stock-removebg-preview.png"),
                                    size=(40, 40))
-Srch = customtkinter.CTkButton(root, text="Search", command=search, image=srchimage, fg_color=buttoncolor, hover="disable",
+Srch = customtkinter.CTkButton(root, text="Search by Token", command=search, image=srchimage, fg_color=buttoncolor, hover="disable",
                                width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
                                height=40)
 Srch.place(x=1350, y=70)
+Srch2 = customtkinter.CTkButton(root, text="Search by Mobile", command=search2, image=srchimage, fg_color=buttoncolor, hover="disable",
+                               width=150, corner_radius=10, border_width=2, border_color="black", border_spacing=2,
+                               height=40)
+Srch2.place(x=1350, y=130)
 
 customtkinter.CTkButton(root, text="Upload", image=srchimage, fg_color=buttoncolor, hover="disable", width=150,
                         corner_radius=10, border_width=2, border_color="black", border_spacing=2, height=40,

@@ -1,17 +1,16 @@
-from docxtpl import DocxTemplate
+import subprocess
 
-doc = DocxTemplate("invoice_template.docx")
+def print_file(file_path):
+    try:
+        subprocess.run(['lpr', file_path])  # Use 'lpr' for macOS or Linux, use 'print' for Windows
+        print("File sent to printer successfully.")
+    except FileNotFoundError:
+        print("Printing command not found or printer not available.")
+    except subprocess.SubprocessError:
+        print("Error occurred while printing.")
 
-invoice_list = [[2, "pen", 0.5, 1],
-                [1, "paper pack", 5, 5],
-                [2, "notebook", 2, 4]]
+# Specify the file path
+file_path = 'path/to/file.pdf'  # Replace with the actual path to your file
 
-
-doc.render({"name":"john", 
-            "phone":"555-55555",
-            "invoice_list": invoice_list,
-            "subtotal":10,
-            "salestax":"10%",
-            "total":9})
-doc.save("new_invoice.docx")
-
+# Print the file
+print_file(file_path)

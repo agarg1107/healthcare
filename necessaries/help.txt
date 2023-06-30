@@ -1,0 +1,22 @@
+Thanks for using our Software.
+-------------------------------------------
+[help] :
+
+Shortcut keys:
+Ctrl + N		- New
+Ctrl + S		- Save
+F1		- help
+Escape Key(Esc)	- Exit Application
+
+------------------------------------------
+For more help, please visit our website: https://www.cideduhub.blogspot.com
+Follow us on:
+	Facebook:	- https://www.fb.me/cideduhub
+	Blogger:	- http://www.cideduhub.blogspot.com
+	Instagram:	- https://www.instagram.com/a1918manav
+	Twitter:	- https://www.twitter.com/A1918manav
+	Messanger:	- https://m.me/cideduhub
+	Reddit:		- manav1918
+	LinkedIn:	- CID An Education Hub
+--------------------------------------------	
+Contact Developer on : cidaneducationhub@gmail.com
